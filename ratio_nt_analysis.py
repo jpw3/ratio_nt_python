@@ -41,8 +41,9 @@ def getStats(id='agg',ids = ids):
 	computeHFRelation(trials, id);
 	computeTargetShapesMatch(trials, id);
 	#simple effects stuff
-	computeSimpleEffectNrTargets(trial_matrix, id);
+	computeSimpleEffectNrTargets(trials, id);
 	computeSimpleEffectHFRelation(trials, id);
+	computeSimpleEffectTargetsMatch(trials, id)
 	print ; print 'Done! '; print ;
 
 #must do a simple effects calculation of hemifield relation and whether shapes match and nr targets
@@ -95,10 +96,10 @@ def computeSimpleEffectHFRelation(trial_matrix, id='agg'):
 	#go through all trials and look for whether it was 1 or 2 targets
 	for hf,bool in zip(['s','d'],[1,0]):
 		#collect the appropriate results and RTs for this condition
-		all_res_matrix = [[tee.result for tee in ts if (tee.same_hf==bool)] for ts in trial_matrix];
-		all_rt_matrix = [[tee.response_time for tee in ts if ((tee.same_hf==bool)&(tee.result==1))] for ts in trial_matrix];
-		all_il_matrix = [[tee.initiation_latency for tee in ts if ((tee.same_hf==bool)&(tee.result==1))] for ts in trial_matrix];
-		all_mt_matrix = [[tee.movement_time for tee in ts if ((tee.same_hf==bool)&(tee.result==1))] for ts in trial_matrix];
+		all_res_matrix = [[tee.result for tee in ts if (tee.same_hf==bool)&(tee.nr_targets==2)] for ts in trial_matrix];
+		all_rt_matrix = [[tee.response_time for tee in ts if ((tee.same_hf==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
+		all_il_matrix = [[tee.initiation_latency for tee in ts if ((tee.same_hf==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
+		all_mt_matrix = [[tee.movement_time for tee in ts if ((tee.same_hf==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
 		res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not		
 		# #get individual rt sds and il sds to 'shave' the rts of extreme outliers
 		# ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
@@ -134,10 +135,10 @@ def computeSimpleEffectTargetsMatch(trial_matrix, id='agg'):
 	#go through all trials and look for whether it was 1 or 2 targets
 	for tsm,bool in zip(['match','not_match'],[1,0]):
 		#collect the appropriate results and RTs for this condition
-		all_res_matrix = [[tee.result for tee in ts if ((tee.target_types[0]==tee.target_types[1])==bool)] for ts in trial_matrix];
-		all_rt_matrix = [[tee.response_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.result==1))] for ts in trial_matrix];
-		all_il_matrix = [[tee.initiation_latency for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.result==1))] for ts in trial_matrix];
-		all_mt_matrix = [[tee.movement_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.result==1))] for ts in trial_matrix];
+		all_res_matrix = [[tee.result for tee in ts if ((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)] for ts in trial_matrix];
+		all_rt_matrix = [[tee.response_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
+		all_il_matrix = [[tee.initiation_latency for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
+		all_mt_matrix = [[tee.movement_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
 		res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not		
 		# #get individual rt sds and il sds to 'shave' the rts of extreme outliers
 		# ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
