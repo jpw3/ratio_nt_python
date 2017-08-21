@@ -35,8 +35,14 @@ def getStats(id='agg',ids = ids):
 	else:
 		blocks = loadAllBlocks(id);
 		trials = getTrials([blocks]);
+	#run the analyses	
 	print 'Starting the suite of analyses...';
+	computeNrStim(trials, id);
+	computeHFRelation(trials, id);
 	print ; print 'Done! '; print ;
+
+#must do a simple efecst calculation of hemifield relation and whether shapes match
+#Can I do it for nr of dists? don't think so, as each level of number of targets is different
 
 
 def computeNrStim(trial_matrix, id='agg'):
@@ -80,7 +86,101 @@ def computeNrStim(trial_matrix, id='agg'):
                 
             db.sync();
     print 'Completed computation of number of stimuli data...';
-    
+
+
+def computeHFRelation(trial_matrix, id='agg'):
+	#this code should go through for each subject and calculate the same vs. different HF contrast
+	#for two target trials for each level of the number of stimuli.
+    if id=='agg':
+        db=subject_data;
+        #add in anova stuff later
+    else:
+        db=individ_subject_data;
+	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
+	for hf,bool in zip(['s','d'],[1,0]):
+		print 'Starting looking at %s hemifield relation'%hf; print ;
+		#then go through the number of distractors
+		for d in [3,4,6,10,13]:
+			print 'Starting %s distractors'%d; print ;
+            #collect the appropriate results and RTs for this condition
+			all_res_matrix = [[tee.result for tee in ts if ((tee.same_hf==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors)))] for ts in trial_matrix];
+			all_rt_matrix = [[tee.response_time for tee in ts if ((tee.same_hf==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
+			all_il_matrix = [[tee.initiation_latency for tee in ts if ((tee.same_hf==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
+			all_mt_matrix = [[tee.movement_time for tee in ts if ((tee.same_hf==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
+			res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not			
+            # #get individual rt sds and il sds to 'shave' the rts of extreme outliers
+            # ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
+            # rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
+            # il_matrix=[[i for i in individ_ils if (i>=(mean(individ_ils)-(3*ind_il_sd)))&(i<=(mean(individ_ils)+(3*ind_il_sd)))] for individ_ils,ind_il_sd in zip(all_il_matrix,ind_il_sds)];
+            # mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
+            # rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];	
+            #for now, dont' shave the RTs 
+			rts = [r for y in all_rt_matrix for r in y]; ils = [i for l in all_il_matrix for i in l];
+			mts = [ms for j in all_mt_matrix for ms in j];
+			if len(rts)==0:
+				continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)
+            #now find the relevant stats and set up the data into the database
+			db['2_targs_%s_hf_%s_dists_%s_nr_stim_mean_rt'%(hf,d,(2+d))] = mean(rts); db['2_targs_%s_hf_%s_dists_%s_nr_stim_median_rt'%(hf,d,(2+d))] = median(rts); db['2_targs_%s_hf_%s_dists_%s_nr_stim_var_rt'%(hf,d,(2+d))] = var(rts);
+			db['2_targs_%s_hf_%s_dists_%s_nr_stim_mean_il'%(hf,d,(2+d))] = mean(ils); db['2_targs_%s_hf_%s_dists_%s_nr_stim_median_il'%(hf,d,(2+d))] = median(ils); db['2_targs_%s_hf_%s_dists_%s_nr_stim_var_il'%(hf,d,(2+d))] = var(ils);
+			db['2_targs_%s_hf_%s_dists_%s_nr_stim_mean_mt'%(hf,d,(2+d))] = mean(mts); db['2_targs_%s_hf_%s_dists_%s_nr_stim_median_mt'%(hf,d,(2+d))] = median(mts); db['2_targs_%s_hf_%s_dists_%s_nr_stim_var_mt'%(hf,d,(2+d))] = var(mts);
+			db['2_targs_%s_hf_%s_dists_%s_nr_stim_pc'%(hf,d,(2+d))] = pc(res);
+			if id=='agg':
+                #calculate the SEMs
+				db['2_targs_%s_hf_%s_dists_%s_nr_stim_rt_SEMs'%(hf,d,(2+d))] = compute_BS_SEM(all_rt_matrix, 'time'); db['2_targs_%s_hf_%s_dists_%s_nr_stim_il_SEMs'%(hf,d,(2+d))] = compute_BS_SEM(all_il_matrix, 'time');
+				db['2_targs_%s_hf_%s_dists_%s_nr_stim_mt_SEMs'%(hf,d,(2+d))] = compute_BS_SEM(all_mt_matrix, 'time'); db['2_targs_%s_hf_%s_dists_%s_nr_stim_pc_SEMs'%(hf,d,(2+d))] = compute_BS_SEM(all_res_matrix, 'result');
+                # do ANOVA stuff
+                
+			db.sync();			
+    print 'Completed computation of hemifield relation data...';			
+
+
+
+
+def computeTargetShapesMatch(trial_matrix, id='agg'):
+	#this code should go through for each subject and calculate the targets match vs. not contrast
+	#for two target trials for each level of the number of stimuli.
+    if id=='agg':
+        db=subject_data;
+        #add in anova stuff later
+    else:
+        db=individ_subject_data;
+	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
+	for tsm,bool in zip(['match','not_match'],[1,0]):
+		print 'Starting looking at %s level of target shapes matching'%hf; print ;
+		#then go through the number of distractors
+		for d in [3,4,6,10,13]:
+			print 'Starting %s distractors'%d; print ;
+            #collect the appropriate results and RTs for this condition
+			all_res_matrix = [[tee.result for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors)))] for ts in trial_matrix];
+			all_rt_matrix = [[tee.response_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
+			all_il_matrix = [[tee.initiation_latency for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
+			all_mt_matrix = [[tee.movement_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
+			res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not			
+            # #get individual rt sds and il sds to 'shave' the rts of extreme outliers
+            # ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
+            # rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
+            # il_matrix=[[i for i in individ_ils if (i>=(mean(individ_ils)-(3*ind_il_sd)))&(i<=(mean(individ_ils)+(3*ind_il_sd)))] for individ_ils,ind_il_sd in zip(all_il_matrix,ind_il_sds)];
+            # mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
+            # rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];	
+            #for now, dont' shave the RTs 
+			rts = [r for y in all_rt_matrix for r in y]; ils = [i for l in all_il_matrix for i in l];
+			mts = [ms for j in all_mt_matrix for ms in j];
+			if len(rts)==0:
+				continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)
+            #now find the relevant stats and set up the data into the database
+			db['2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(tsm,d,(2+d))] = mean(rts); db['2_targs_shapes_%s_%s_dists_%s_nr_stim_median_rt'%(tsm,d,(2+d))] = median(rts); db['2_targs_shapes_%s_%s_dists_%s_nr_stim_var_rt'%(tsm,d,(2+d))] = var(rts);
+			db['2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_il'%(tsm,d,(2+d))] = mean(ils); db['2_targs_shapes_%s_%s_dists_%s_nr_stim_median_il'%(tsm,d,(2+d))] = median(ils); db['2_targs_shapes_%s_%s_dists_%s_nr_stim_var_il'%(tsm,d,(2+d))] = var(ils);
+			db['2_targs_shapes_%s_dists_%s_nr_stim_mean_mt'%(tsm,d,(2+d))] = mean(mts); db['2_targs_shapes_%s_%s_dists_%s_nr_stim_median_mt'%(tsm,d,(2+d))] = median(mts); db['2_targs_shapes_%s_%s_dists_%s_nr_stim_var_mt'%(tsm,d,(2+d))] = var(mts);
+			db['2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%(tsm,d,(2+d))] = pc(res);
+			if id=='agg':
+                #calculate the SEMs
+				db['2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(tsm,d,(2+d))] = compute_BS_SEM(all_rt_matrix, 'time'); db['2_targs_shapes_%s_%s_dists_%s_nr_stim_il_SEMs'%(tsm,d,(2+d))] = compute_BS_SEM(all_il_matrix, 'time');
+				db['2_targs_shapes_%s_%s_dists_%s_nr_stim_mt_SEMs'%(tsm,d,(2+d))] = compute_BS_SEM(all_mt_matrix, 'time'); db['2_targs_shapes_%s_%s_dists_%s_nr_stim_pc_SEMs'%(tsm,d,(2+d))] = compute_BS_SEM(all_res_matrix, 'result');
+                # do ANOVA stuff
+                
+			db.sync();			
+    print 'Completed computation of target shapes matching data...';
+				
 
 def compute_BS_SEM(data_matrix, type):
     #calculate the between-subjects standard error of the mean. data_matrix should be matrix of trials including each subject
