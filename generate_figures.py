@@ -11,7 +11,8 @@ import shelve #for database writing and reading
 #screen dimensions for the office ocmputer = (19.2,10.44)
 
 datapath = '/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #
-shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # '/Users/james/Documents/Python/ratio_nt/data/'; #  
+shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # '/Users/james/Documents/Python/ratio_nt/data/'; #
+savepath = '/Users/jameswilmott/Documents/Python/ratio_nt/figures/'; # '/Users/james/Documents/Python/ratio_nt/figures/'; #
 
 #import the persistent database to save data analysis for future use (plotting)
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
@@ -19,7 +20,7 @@ individ_subject_data = shelve.open(shelvepath+'individ_ratio_nt_data');
 
 ids=['1']; #'jpw'
 
-id = raw_input('Input I.D. [agg for all subjects, otherwise specify a single subject: ]');
+id = raw_input('Input I.D. [agg for all subjects, otherwise specify a single subject]:   ');
 
 if id=='agg':
     db = subject_data;
@@ -45,7 +46,7 @@ matplotlib.pyplot.rc('font',weight='bold');
 
 # RT
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(400,800); ax1.set_yticks(arange(450,801,50));
+ax1.set_ylim(400,1000); ax1.set_yticks(arange(450,1001,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
@@ -57,7 +58,7 @@ mt_x = 2 + array([3,4,6,10,13]);
 #plot them
 colors=['limegreen','mediumpurple'];
 for x,y,c in zip([st_x, mt_x],[st_rts, mt_rts], colors):
-    ax1.plot(x, y, color = c, lw = 5.0);
+    ax1.plot(x, y, marker='o', markersize=18, color = c, lw = 5.0);
 
 #assign some configurations to the plots
 title('Reaction Time by Number of Stimuli', fontsize = 22);
@@ -72,7 +73,7 @@ ax1.legend(handles=[oneline,twoline],loc = 'best',ncol=2,fontsize = 14);
 # savefig(savepath+filename+'.png',dpi=400);
 # #then get rid of labels and save as a .eps
 # title(''); ax1.set_ylabel(''); ax1.set_xlabel('');
-#labels[7]=''; labels[8]=''; labels[9]=''; labels[10]=''; labels[11]=''; labels[12]=''; 
+# labels[7]=''; labels[8]=''; labels[9]=''; labels[10]=''; labels[11]=''; labels[12]=''; 
 # labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]=''; labels[1]=''; labels[2]=''; labels[3]=''; labels[4]=''; labels[5]=''; labels[6]='';
 # ax1.set_xticklabels(labels);
 # ax1.set_yticklabels(['','','','','','','','','','','','','','']);
@@ -84,7 +85,7 @@ show();
 
 # PC
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(0.75, 1.0); ax1.set_yticks(arange(0.8, 1.01, 0.05));
+ax1.set_ylim(0.75, 1.01); ax1.set_yticks(arange(0.8, 1.01, 0.05));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
@@ -96,7 +97,7 @@ mt_x = 2 + array([3,4,6,10,13]);
 #plot them
 colors=['limegreen','mediumpurple'];
 for x,y,c in zip([st_x, mt_x],[st_rts, mt_rts], colors):
-    ax1.plot(x, y, color = c, lw = 5.0);
+    ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0);
 
 #assign some configurations to the plots
 title('Accuracy by Number of Stimuli', fontsize = 22);
@@ -123,7 +124,7 @@ show();
 
 # RT
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(400,800); ax1.set_yticks(arange(450,801,50));
+ax1.set_ylim(400,1000); ax1.set_yticks(arange(450,1001,50));
 ax1.set_xlim([1, 15]);  ax1.set_xticks([2,3,4,5,6,7,8,9,10,11,12,13,14]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Distractors', size=18);
 #first off get both number of targets search functions together
@@ -135,7 +136,7 @@ mt_x = array([3,4,6,10,13]);
 #plot them
 colors=['limegreen','mediumpurple'];
 for x,y,c in zip([st_x, mt_x],[st_rts, mt_rts], colors):
-    ax1.plot(x, y, color = c, lw = 5.0);
+    ax1.plot(x, y, marker='o', markersize=18,color = c, lw = 5.0);
 
 #assign some configurations to the plots
 title('Reaction Time by Number of Distractors', fontsize = 22);
@@ -161,8 +162,8 @@ show();
 
 # PC
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(0.75, 1.0); ax1.set_yticks(arange(0.8, 1.01, 0.05));
-ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
+ax1.set_ylim(0.75, 1.01); ax1.set_yticks(arange(0.8, 1.001, 0.05));
+ax1.set_xlim([1, 15]);  ax1.set_xticks([2,3,4,5,6,7,8,9,10,11,12,13,14]);
 ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Number of Distractors', size=18);
 #first off get both number of targets search functions together
 st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_pc'%(id,d,(1+d))] for d in [2,3,5,10,14]];
@@ -173,7 +174,7 @@ mt_x = array([3,4,6,10,13]);
 #plot them
 colors=['limegreen','mediumpurple'];
 for x,y,c in zip([st_x, mt_x],[st_rts, mt_rts], colors):
-    ax1.plot(x, y, color = c, lw = 5.0);
+    ax1.plot(x, y, marker='o', markersize=18,color = c, lw = 5.0);
 
 #assign some configurations to the plots
 title('Accuracy by Number of Distractors', fontsize = 22);
@@ -204,7 +205,7 @@ show();
 
 # RT
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(400,800); ax1.set_yticks(arange(450,801,50));
+ax1.set_ylim(400,1000); ax1.set_yticks(arange(450,1001,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
@@ -215,7 +216,7 @@ diff_x = 2 + array([3,4,6,10,13]);
 #plot them
 colors=['dodgerblue','darkorange'];
 for x,y,c in zip([same_x, diff_x],[same_rts, diff_rts], colors):
-    ax1.plot(x, y, color = c, lw = 5.0);
+    ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0);
 #assign some configurations to the plots
 title('Reaction Time by Number of Stimuli', fontsize = 22);
 ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
@@ -238,7 +239,7 @@ ax1.legend(handles=[oneline,twoline],loc = 'best',ncol=2,fontsize = 14);
 
 # PC
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(0.75, 1.0); ax1.set_yticks(arange(0.8, 1.01, 0.05));
+ax1.set_ylim(0.75, 1.01); ax1.set_yticks(arange(0.8, 1.001, 0.05));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
@@ -250,7 +251,7 @@ diff_x = 2 + array([3,4,6,10,13]);
 colors=['limegreen','mediumpurple'];
 colors=['dodgerblue','darkorange'];
 for x,y,c in zip([same_x, diff_x],[same_rts, diff_rts], colors):
-    ax1.plot(x, y, color = c, lw = 5.0);
+    ax1.plot(x, y, marker='o', markersize=18,color = c, lw = 5.0);
 #assign some configurations to the plots
 title('Accuracy by Number of Stimuli', fontsize = 22);
 ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
@@ -275,7 +276,7 @@ show();
 
 # RT
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(400,800); ax1.set_yticks(arange(450,801,50));
+ax1.set_ylim(400,1000); ax1.set_yticks(arange(450,1001,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Distractors', size=18);
 #first off get both number of targets search functions together
@@ -286,7 +287,7 @@ diff_x = array([3,4,6,10,13]);
 #plot them
 colors=['dodgerblue','darkorange'];
 for x,y,c in zip([same_x, diff_x],[same_rts, diff_rts], colors):
-    ax1.plot(x, y, color = c, lw = 5.0);
+    ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0);
 #assign some configurations to the plots
 title('Reaction Time by Number of Distractors', fontsize = 22);
 ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
@@ -309,7 +310,7 @@ ax1.legend(handles=[oneline,twoline],loc = 'best',ncol=2,fontsize = 14);
 
 # PC
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(0.75, 1.0); ax1.set_yticks(arange(0.8, 1.01, 0.05));
+ax1.set_ylim(0.75, 1.01); ax1.set_yticks(arange(0.8, 1.001, 0.05));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Number of Distractors', size=18);
 #first off get both number of targets search functions together
@@ -321,7 +322,7 @@ diff_x = array([3,4,6,10,13]);
 colors=['limegreen','mediumpurple'];
 colors=['dodgerblue','darkorange'];
 for x,y,c in zip([same_x, diff_x],[same_rts, diff_rts], colors):
-    ax1.plot(x, y, color = c, lw = 5.0);
+    ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0);
 #assign some configurations to the plots
 title('Accuracy by Number of Distractors', fontsize = 22);
 ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
@@ -351,7 +352,7 @@ show();
 
 # RT
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(400,800); ax1.set_yticks(arange(450,801,50));
+ax1.set_ylim(400,1000); ax1.set_yticks(arange(450,1001,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
@@ -361,8 +362,8 @@ match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'match',d
 match_x = 2 + array([3,4,6,10,13]);
 #plot them
 colors=['lightsteelblue','dimgrey'];
-for x,y,c in zip([same_x, diff_x],[same_rts, diff_rts], colors):
-    ax1.plot(x, y, color = c, lw = 5.0);
+for x,y,c in zip([nomatch_x, match_x],[nomatch_rts, match_rts], colors):
+    ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0);
 #assign some configurations to the plots
 title('Reaction Time by Number of Stimuli', fontsize = 22);
 ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
@@ -384,18 +385,18 @@ ax1.legend(handles=[oneline,twoline],loc = 'best',ncol=2,fontsize = 14);
 
 #PC
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(0.75, 1.0); ax1.set_yticks(arange(0.8, 1.01, 0.05));
+ax1.set_ylim(0.75, 1.01); ax1.set_yticks(arange(0.8, 1.001, 0.05));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
-nomatch_rts = [db['2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
+nomatch_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
 nomatch_x = 2 + array([3,4,6,10,13]);
-match_rts = [db['2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
+match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
 match_x = 2 + array([3,4,6,10,13]);
 #plot them
 colors=['lightsteelblue','dimgrey'];
-for x,y,c in zip([same_x, diff_x],[same_rts, diff_rts], colors):
-    ax1.plot(x, y, color = c, lw = 5.0);
+for x,y,c in zip([nomatch_x, match_x],[nomatch_rts, match_rts], colors):
+    ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0);
 #assign some configurations to the plots
 title('Accuracy by Number of Stimuli', fontsize = 22);
 ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
@@ -420,7 +421,7 @@ ax1.legend(handles=[oneline,twoline],loc = 'best',ncol=2,fontsize = 14);
 
 # RT
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(400,800); ax1.set_yticks(arange(450,801,50));
+ax1.set_ylim(400,1000); ax1.set_yticks(arange(450,1001,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Total Distractors', size=18);
 #first off get both number of targets search functions together
@@ -430,8 +431,8 @@ match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'match',d
 match_x = array([3,4,6,10,13]);
 #plot them
 colors=['lightsteelblue','dimgrey'];
-for x,y,c in zip([same_x, diff_x],[same_rts, diff_rts], colors):
-    ax1.plot(x, y, color = c, lw = 5.0);
+for x,y,c in zip([nomatch_x, match_x],[nomatch_rts, match_rts], colors):
+    ax1.plot(x, y, marker='o', markersize=18,color = c, lw = 5.0);
 #assign some configurations to the plots
 title('Reaction Time by Number of Distractors', fontsize = 22);
 ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
@@ -453,7 +454,7 @@ ax1.legend(handles=[oneline,twoline],loc = 'best',ncol=2,fontsize = 14);
 
 #PC
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(0.75, 1.0); ax1.set_yticks(arange(0.8, 1.01, 0.05));
+ax1.set_ylim(0.75, 1.01); ax1.set_yticks(arange(0.8, 1.001, 0.05));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Number of Distractors', size=18);
 #first off get both number of targets search functions together
@@ -463,8 +464,8 @@ match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%(id,'match',d,(2+d
 match_x = array([3,4,6,10,13]);
 #plot them
 colors=['lightsteelblue','dimgrey'];
-for x,y,c in zip([same_x, diff_x],[same_rts, diff_rts], colors):
-    ax1.plot(x, y, color = c, lw = 5.0);
+for x,y,c in zip([nomatch_x, match_x],[nomatch_rts, match_rts], colors):
+    ax1.plot(x, y, marker='o', markersize=18,color = c, lw = 5.0);
 #assign some configurations to the plots
 title('Accuracy by Number of Distractors', fontsize = 22);
 ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);

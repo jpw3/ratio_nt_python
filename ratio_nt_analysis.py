@@ -20,7 +20,7 @@ shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # '/Users/j
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
 individ_subject_data = shelve.open(shelvepath+'individ_ratio_nt_data');
 
-ids=['jpw'];
+ids=['1']; #'jpw'
 
 # 1 targets: nr dists was 2,3,5,10,14
 # 2 targets: 3, 4, 6, 10, 13
@@ -264,7 +264,7 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
         db=individ_subject_data;
 	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
 	for tsm,bool in zip(['match','not_match'],[1,0]):
-		print 'Starting looking at %s level of target shapes matching'%hf; print ;
+		print 'Starting looking at %s level of target shapes matching'%tsm; print ;
 		#then go through the number of distractors
 		for d in [3,4,6,10,13]:
 			print 'Starting %s distractors'%d; print ;
@@ -288,7 +288,7 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
             #now find the relevant stats and set up the data into the database
 			db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,tsm,d,(2+d))] = mean(rts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_median_rt'%(id,tsm,d,(2+d))] = median(rts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_var_rt'%(id,tsm,d,(2+d))] = var(rts);
 			db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_il'%(id,tsm,d,(2+d))] = mean(ils); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_median_il'%(id,tsm,d,(2+d))] = median(ils); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_var_il'%(id,tsm,d,(2+d))] = var(ils);
-			db['%s_2_targs_shapes_%s_dists_%s_nr_stim_mean_mt'%(id,tsm,d,(2+d))] = mean(mts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_median_mt'%(id,tsm,d,(2+d))] = median(mts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_var_mt'%(id,tsm,d,(2+d))] = var(mts);
+			db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_mt'%(id,tsm,d,(2+d))] = mean(mts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_median_mt'%(id,tsm,d,(2+d))] = median(mts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_var_mt'%(id,tsm,d,(2+d))] = var(mts);
 			db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%(id,tsm,d,(2+d))] = pc(res);
 			if id=='agg':
                 #calculate the SEMs
