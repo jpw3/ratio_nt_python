@@ -16,10 +16,15 @@ shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # '/Users/j
 #import the persistent database to save data analysis for future use (plotting)
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
 individ_subject_data = shelve.open(shelvepath+'individ_ratio_nt_data');
-db = subject_data; i_db = individ_subject_data; id = 'agg';
 
-ids=['jpw'];
+ids=['1']; #'jpw'
 
+id = raw_input('Input I.D. [agg for all subjects, otherwise specify a single subject: ]');
+
+if id=='agg':
+    db = subject_data;
+else:
+    db = individ_subject_data; 
 
 ## Create the plots and save them ####
 #Note, all plots are means of aggregate data
@@ -44,9 +49,9 @@ ax1.set_ylim(400,800); ax1.set_yticks(arange(450,801,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
-st_rts = [db['1_targs_%s_dists_%s_nr_stim_mean_rt'%(d,(1+d))] for d in [2,3,5,10,14]];
+st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(1+d))] for d in [2,3,5,10,14]];
 st_x = 1 + array([2,3,5,10,14]);
-mt_rts = [db['2_targs_%s_dists_%s_nr_stim_mean_rt'%(d,(2+d))] for d in [3,4,6,10,13]];
+mt_rts = [db['%s_2_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(2+d))] for d in [3,4,6,10,13]];
 mt_x = 2 + array([3,4,6,10,13]);
 
 #plot them
@@ -83,9 +88,9 @@ ax1.set_ylim(0.75, 1.0); ax1.set_yticks(arange(0.8, 1.01, 0.05));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
-st_rts = [db['1_targs_%s_dists_%s_nr_stim_pc'%(d,(1+d))] for d in [2,3,5,10,14]];
+st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_pc'%(id,d,(1+d))] for d in [2,3,5,10,14]];
 st_x = 1 + array([2,3,5,10,14]);
-mt_rts = [db['2_targs_%s_dists_%s_nr_stim_pc'%(d,(2+d))] for d in [3,4,6,10,13]];
+mt_rts = [db['%s_2_targs_%s_dists_%s_nr_stim_pc'%(id,d,(2+d))] for d in [3,4,6,10,13]];
 mt_x = 2 + array([3,4,6,10,13]);
 
 #plot them
@@ -122,9 +127,9 @@ ax1.set_ylim(400,800); ax1.set_yticks(arange(450,801,50));
 ax1.set_xlim([1, 15]);  ax1.set_xticks([2,3,4,5,6,7,8,9,10,11,12,13,14]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Distractors', size=18);
 #first off get both number of targets search functions together
-st_rts = [db['1_targs_%s_dists_%s_nr_stim_mean_rt'%(d,(1+d))] for d in [2,3,5,10,14]];
+st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(1+d))] for d in [2,3,5,10,14]];
 st_x = array([2,3,5,10,14]);
-mt_rts = [db['2_targs_%s_dists_%s_nr_stim_mean_rt'%(d,(2+d))] for d in [3,4,6,10,13]];
+mt_rts = [db['%s_2_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(2+d))] for d in [3,4,6,10,13]];
 mt_x = array([3,4,6,10,13]);
 
 #plot them
@@ -160,9 +165,9 @@ ax1.set_ylim(0.75, 1.0); ax1.set_yticks(arange(0.8, 1.01, 0.05));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Number of Distractors', size=18);
 #first off get both number of targets search functions together
-st_rts = [db['1_targs_%s_dists_%s_nr_stim_pc'%(d,(1+d))] for d in [2,3,5,10,14]];
+st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_pc'%(id,d,(1+d))] for d in [2,3,5,10,14]];
 st_x = array([2,3,5,10,14]);
-mt_rts = [db['2_targs_%s_dists_%s_nr_stim_pc'%(d,(2+d))] for d in [3,4,6,10,13]];
+mt_rts = [db['%s_2_targs_%s_dists_%s_nr_stim_pc'%(id,d,(2+d))] for d in [3,4,6,10,13]];
 mt_x = array([3,4,6,10,13]);
 
 #plot them
@@ -203,9 +208,9 @@ ax1.set_ylim(400,800); ax1.set_yticks(arange(450,801,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
-same_rts = [db['2_targs_%s_hf_%s_dists_%s_nr_stim_mean_rt'%('s',d,(2+d))] for d in [3,4,6,10,13]];
+same_rts = [db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_mean_rt'%(id,'s',d,(2+d))] for d in [3,4,6,10,13]];
 same_x = 2 + array([3,4,6,10,13]);
-diff_rts = [db['2_targs_%s_hf_%s_dists_%s_nr_stim_mean_rt'%('d',d,(2+d))] for d in [3,4,6,10,13]];
+diff_rts = [db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_mean_rt'%(id,'d',d,(2+d))] for d in [3,4,6,10,13]];
 diff_x = 2 + array([3,4,6,10,13]);
 #plot them
 colors=['dodgerblue','darkorange'];
@@ -237,9 +242,9 @@ ax1.set_ylim(0.75, 1.0); ax1.set_yticks(arange(0.8, 1.01, 0.05));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
-same_rts = [db['2_targs_%s_hf_%s_dists_%s_nr_stim_pc'%('s',d,(2+d))] for d in [3,4,6,10,13]];
+same_rts = [db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_pc'%(id,'s',d,(2+d))] for d in [3,4,6,10,13]];
 same_x = 2 + array([3,4,6,10,13]);
-diff_rts = [db['2_targs_%s_hf_%s_dists_%s_nr_stim_pc'%('d',d,(2+d))] for d in [3,4,6,10,13]];
+diff_rts = [db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_pc'%(id,'d',d,(2+d))] for d in [3,4,6,10,13]];
 diff_x = 2 + array([3,4,6,10,13]);
 #plot them
 colors=['limegreen','mediumpurple'];
@@ -274,9 +279,9 @@ ax1.set_ylim(400,800); ax1.set_yticks(arange(450,801,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Distractors', size=18);
 #first off get both number of targets search functions together
-same_rts = [db['2_targs_%s_hf_%s_dists_%s_nr_stim_mean_rt'%('s',d,(2+d))] for d in [3,4,6,10,13]];
+same_rts = [db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_mean_rt'%(id,'s',d,(2+d))] for d in [3,4,6,10,13]];
 same_x = array([3,4,6,10,13]);
-diff_rts = [db['2_targs_%s_hf_%s_dists_%s_nr_stim_mean_rt'%('d',d,(2+d))] for d in [3,4,6,10,13]];
+diff_rts = [db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_mean_rt'%(id,'d',d,(2+d))] for d in [3,4,6,10,13]];
 diff_x = array([3,4,6,10,13]);
 #plot them
 colors=['dodgerblue','darkorange'];
@@ -308,9 +313,9 @@ ax1.set_ylim(0.75, 1.0); ax1.set_yticks(arange(0.8, 1.01, 0.05));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Number of Distractors', size=18);
 #first off get both number of targets search functions together
-same_rts = [db['2_targs_%s_hf_%s_dists_%s_nr_stim_pc'%('s',d,(2+d))] for d in [3,4,6,10,13]];
+same_rts = [db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_pc'%(id,'s',d,(2+d))] for d in [3,4,6,10,13]];
 same_x = array([3,4,6,10,13]);
-diff_rts = [db['2_targs_%s_hf_%s_dists_%s_nr_stim_pc'%('d',d,(2+d))] for d in [3,4,6,10,13]];
+diff_rts = [db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_pc'%(id,'d',d,(2+d))] for d in [3,4,6,10,13]];
 diff_x = array([3,4,6,10,13]);
 #plot them
 colors=['limegreen','mediumpurple'];
@@ -350,9 +355,9 @@ ax1.set_ylim(400,800); ax1.set_yticks(arange(450,801,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
-nomatch_rts = [db['2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%('not_match',d,(2+d))] for d in [3,4,6,10,13]];
+nomatch_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
 nomatch_x = 2 + array([3,4,6,10,13]);
-match_rts = [db['2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%('match',d,(2+d))] for d in [3,4,6,10,13]];
+match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
 match_x = 2 + array([3,4,6,10,13]);
 #plot them
 colors=['lightsteelblue','dimgrey'];
@@ -383,9 +388,9 @@ ax1.set_ylim(0.75, 1.0); ax1.set_yticks(arange(0.8, 1.01, 0.05));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
-nomatch_rts = [db['2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%('not_match',d,(2+d))] for d in [3,4,6,10,13]];
+nomatch_rts = [db['2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
 nomatch_x = 2 + array([3,4,6,10,13]);
-match_rts = [db['2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%('match',d,(2+d))] for d in [3,4,6,10,13]];
+match_rts = [db['2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
 match_x = 2 + array([3,4,6,10,13]);
 #plot them
 colors=['lightsteelblue','dimgrey'];
@@ -419,9 +424,9 @@ ax1.set_ylim(400,800); ax1.set_yticks(arange(450,801,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Total Distractors', size=18);
 #first off get both number of targets search functions together
-nomatch_rts = [db['2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%('not_match',d,(2+d))] for d in [3,4,6,10,13]];
+nomatch_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
 nomatch_x = array([3,4,6,10,13]);
-match_rts = [db['2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%('match',d,(2+d))] for d in [3,4,6,10,13]];
+match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
 match_x = array([3,4,6,10,13]);
 #plot them
 colors=['lightsteelblue','dimgrey'];
@@ -452,9 +457,9 @@ ax1.set_ylim(0.75, 1.0); ax1.set_yticks(arange(0.8, 1.01, 0.05));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Number of Distractors', size=18);
 #first off get both number of targets search functions together
-nomatch_rts = [db['2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%('not_match',d,(2+d))] for d in [3,4,6,10,13]];
+nomatch_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
 nomatch_x = array([3,4,6,10,13]);
-match_rts = [db['2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%('match',d,(2+d))] for d in [3,4,6,10,13]];
+match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
 match_x = array([3,4,6,10,13]);
 #plot them
 colors=['lightsteelblue','dimgrey'];
