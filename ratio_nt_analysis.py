@@ -20,7 +20,7 @@ shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # '/Users/j
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
 individ_subject_data = shelve.open(shelvepath+'individ_ratio_nt_data');
 
-ids=['1']; #'jpw'
+ids=['1','2','3']; #'jpw'
 
 # 1 targets: nr dists was 2,3,5,10,14
 # 2 targets: 3, 4, 6, 10, 13
@@ -81,7 +81,7 @@ def computeSimpleEffectNrTargets(trial_matrix, id='agg'):
 		if id=='agg':
 			#calculate the SEMs
 			db['%s_%s_targs_rt_SEMs'%(id,nr_t)] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_%s_targs_il_SEMs'%(id,nr_t)] = compute_BS_SEM(all_il_matrix, 'time');
-			db['%s_%s_targs_mt_SEMs'%(id,nr_t)] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_%s_targs_pc_SEMs'%(nid,r_t)] = compute_BS_SEM(all_res_matrix, 'result');
+			db['%s_%s_targs_mt_SEMs'%(id,nr_t)] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_%s_targs_pc_SEMs'%(id,nr_t)] = compute_BS_SEM(all_res_matrix, 'result');
 			# do ANOVA stuff
 			    
 			db.sync();			
@@ -212,92 +212,92 @@ def computeNrStim(trial_matrix, id='agg'):
 def computeHFRelation(trial_matrix, id='agg'):
 	#this code should go through for each subject and calculate the same vs. different HF contrast
 	#for two target trials for each level of the number of stimuli.
-    if id=='agg':
-        db=subject_data;
-        #add in anova stuff later
-    else:
-        db=individ_subject_data;
+	if id=='agg':
+		db=subject_data;
+		#add in anova stuff later
+	else:
+		db=individ_subject_data;
 	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
 	for hf,bool in zip(['s','d'],[1,0]):
 		print 'Starting looking at %s hemifield relation'%hf; print ;
 		#then go through the number of distractors
 		for d in [3,4,6,10,13]:
 			print 'Starting %s distractors'%d; print ;
-            #collect the appropriate results and RTs for this condition
+			#collect the appropriate results and RTs for this condition
 			all_res_matrix = [[tee.result for tee in ts if ((tee.same_hf==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors)))] for ts in trial_matrix];
 			all_rt_matrix = [[tee.response_time for tee in ts if ((tee.same_hf==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
 			all_il_matrix = [[tee.initiation_latency for tee in ts if ((tee.same_hf==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
 			all_mt_matrix = [[tee.movement_time for tee in ts if ((tee.same_hf==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
 			res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not			
-            # #get individual rt sds and il sds to 'shave' the rts of extreme outliers
-            # ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
-            # rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
-            # il_matrix=[[i for i in individ_ils if (i>=(mean(individ_ils)-(3*ind_il_sd)))&(i<=(mean(individ_ils)+(3*ind_il_sd)))] for individ_ils,ind_il_sd in zip(all_il_matrix,ind_il_sds)];
-            # mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
-            # rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];	
-            #for now, dont' shave the RTs 
+			# #get individual rt sds and il sds to 'shave' the rts of extreme outliers
+			# ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
+			# rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
+			# il_matrix=[[i for i in individ_ils if (i>=(mean(individ_ils)-(3*ind_il_sd)))&(i<=(mean(individ_ils)+(3*ind_il_sd)))] for individ_ils,ind_il_sd in zip(all_il_matrix,ind_il_sds)];
+			# mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
+			# rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];	
+			#for now, dont' shave the RTs 
 			rts = [r for y in all_rt_matrix for r in y]; ils = [i for l in all_il_matrix for i in l];
 			mts = [ms for j in all_mt_matrix for ms in j];
 			if len(rts)==0:
 				continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)
-            #now find the relevant stats and set up the data into the database
+			#now find the relevant stats and set up the data into the database
 			db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_mean_rt'%(id,hf,d,(2+d))] = mean(rts); db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_median_rt'%(id,hf,d,(2+d))] = median(rts); db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_var_rt'%(id,hf,d,(2+d))] = var(rts);
 			db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_mean_il'%(id,hf,d,(2+d))] = mean(ils); db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_median_il'%(id,hf,d,(2+d))] = median(ils); db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_var_il'%(id,hf,d,(2+d))] = var(ils);
 			db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_mean_mt'%(id,hf,d,(2+d))] = mean(mts); db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_median_mt'%(id,hf,d,(2+d))] = median(mts); db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_var_mt'%(id,hf,d,(2+d))] = var(mts);
 			db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_pc'%(id,hf,d,(2+d))] = pc(res);
 			if id=='agg':
-                #calculate the SEMs
+				#calculate the SEMs
 				db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_rt_SEMs'%(id,hf,d,(2+d))] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_il_SEMs'%(id,hf,d,(2+d))] = compute_BS_SEM(all_il_matrix, 'time');
 				db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_mt_SEMs'%(id,hf,d,(2+d))] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_pc_SEMs'%(id,hf,d,(2+d))] = compute_BS_SEM(all_res_matrix, 'result');
-                # do ANOVA stuff
-                
+				# do ANOVA stuff
+				
 			db.sync();			
-    print 'Completed computation of hemifield relation data...';			
+	print 'Completed computation of hemifield relation data...';			
 
 def computeTargetShapesMatch(trial_matrix, id='agg'):
 	#this code should go through for each subject and calculate the targets match vs. not contrast
 	#for two target trials for each level of the number of stimuli.
-    if id=='agg':
-        db=subject_data;
-        #add in anova stuff later
-    else:
-        db=individ_subject_data;
+	if id=='agg':
+		db=subject_data;
+		#add in anova stuff later
+	else:
+		db=individ_subject_data;
 	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
 	for tsm,bool in zip(['match','not_match'],[1,0]):
 		print 'Starting looking at %s level of target shapes matching'%tsm; print ;
 		#then go through the number of distractors
 		for d in [3,4,6,10,13]:
 			print 'Starting %s distractors'%d; print ;
-            #collect the appropriate results and RTs for this condition
+			#collect the appropriate results and RTs for this condition
 			all_res_matrix = [[tee.result for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors)))] for ts in trial_matrix];
 			all_rt_matrix = [[tee.response_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
 			all_il_matrix = [[tee.initiation_latency for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
 			all_mt_matrix = [[tee.movement_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
 			res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not			
-            # #get individual rt sds and il sds to 'shave' the rts of extreme outliers
-            # ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
-            # rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
-            # il_matrix=[[i for i in individ_ils if (i>=(mean(individ_ils)-(3*ind_il_sd)))&(i<=(mean(individ_ils)+(3*ind_il_sd)))] for individ_ils,ind_il_sd in zip(all_il_matrix,ind_il_sds)];
-            # mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
-            # rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];	
-            #for now, dont' shave the RTs 
+			# #get individual rt sds and il sds to 'shave' the rts of extreme outliers
+			# ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
+			# rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
+			# il_matrix=[[i for i in individ_ils if (i>=(mean(individ_ils)-(3*ind_il_sd)))&(i<=(mean(individ_ils)+(3*ind_il_sd)))] for individ_ils,ind_il_sd in zip(all_il_matrix,ind_il_sds)];
+			# mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
+			# rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];	
+			#for now, dont' shave the RTs 
 			rts = [r for y in all_rt_matrix for r in y]; ils = [i for l in all_il_matrix for i in l];
 			mts = [ms for j in all_mt_matrix for ms in j];
 			if len(rts)==0:
 				continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)
-            #now find the relevant stats and set up the data into the database
+			#now find the relevant stats and set up the data into the database
 			db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,tsm,d,(2+d))] = mean(rts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_median_rt'%(id,tsm,d,(2+d))] = median(rts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_var_rt'%(id,tsm,d,(2+d))] = var(rts);
 			db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_il'%(id,tsm,d,(2+d))] = mean(ils); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_median_il'%(id,tsm,d,(2+d))] = median(ils); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_var_il'%(id,tsm,d,(2+d))] = var(ils);
 			db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_mt'%(id,tsm,d,(2+d))] = mean(mts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_median_mt'%(id,tsm,d,(2+d))] = median(mts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_var_mt'%(id,tsm,d,(2+d))] = var(mts);
 			db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc'%(id,tsm,d,(2+d))] = pc(res);
 			if id=='agg':
-                #calculate the SEMs
+			#calculate the SEMs
 				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_il_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_il_matrix, 'time');
 				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mt_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_res_matrix, 'result');
-                # do ANOVA stuff
-                
+			# do ANOVA stuff
+	
 			db.sync();			
-    print 'Completed computation of target shapes matching data...';
+	print 'Completed computation of target shapes matching data...';
 				
 
 def compute_BS_SEM(data_matrix, type):
@@ -382,39 +382,39 @@ class Block(object):
 #define a Trial object that will hold the individual trial data 
 class trial(object):
 	#object being passed into this Trial instance should be a dictionary corresponding to the trial data for this given trial
-    def __init__(self, trialData, block_type, sub_id):
-        self.sub_id = sub_id;
-        self.block_nr = trialData.block_nr; #self.trial_nr = trialData.trial_nr;
-        self.block_type = block_type;
-        self.trial_type = trialData.trial_type; #determines the colors, distances, nr of targets
-        self.nr_targets = trialData.nr_targets;
-        self.nr_distractors = trialData.nr_distractors;
-        self.target_col = str(trialData.target_col); #red or green
-        self.dist_col = str(trialData.dist_col); #red or green
-        self.target_types = trialData.t_types;
-        self.inter_target_distance = trialData.t_dist;
-        self.same_hf = trialData.same_hf;
-        self.nr_left_side = trialData.nr_left_side;
-        self.nr_right_side = trialData.nr_right_side;
-        self.target_shapes_match = trialData.target_shapes_match;
-        #below here is the coordinates and distances
-        self.target_coors = trialData.target_coors;
-        self.dist_coors = trialData.dist_coors;
-        self.target_distance = trialData.target_distances;
-        self.dist_distances = trialData.distractor_distances;
-        #trial times
-        self.trial_times = trialData.trial_times;
-        self.initiation_latency = trialData.trial_times.initiation_latency*1000;
-        self.response_time = self.trial_times.response_time*1000; #put every time into seconds  
-        self.movement_time = self.response_time-self.initiation_latency;
-        #response and results
-        self.reponse = str(trialData.response); #letter corresponding to presented
-        self.result = trialData.result; #right or wrong, 1 or 0
-        self.selected_type = trialData.selected_type; #precense or absence
-        self.abort = trialData.abort_trial;
-        #finally, eye position and pupil size information
-        self.eyeX = trialData.eyeX;
-        self.eyeY = trialData.eyeY;
-        self.p_size = trialData.pSize;
-        self.sample_times = trialData.sampleTimes;
-        self.drift_shift = trialData.drift_shift;
+	def __init__(self, trialData, block_type, sub_id):
+		self.sub_id = sub_id;
+		self.block_nr = trialData.block_nr; #self.trial_nr = trialData.trial_nr;
+		self.block_type = block_type;
+		self.trial_type = trialData.trial_type; #determines the colors, distances, nr of targets
+		self.nr_targets = trialData.nr_targets;
+		self.nr_distractors = trialData.nr_distractors;
+		self.target_col = str(trialData.target_col); #red or green
+		self.dist_col = str(trialData.dist_col); #red or green
+		self.target_types = trialData.t_types;
+		self.inter_target_distance = trialData.t_dist;
+		self.same_hf = trialData.same_hf;
+		self.nr_left_side = trialData.nr_left_side;
+		self.nr_right_side = trialData.nr_right_side;
+		self.target_shapes_match = trialData.target_shapes_match;
+		#below here is the coordinates and distances
+		self.target_coors = trialData.target_coors;
+		self.dist_coors = trialData.dist_coors;
+		self.target_distance = trialData.target_distances;
+		self.dist_distances = trialData.distractor_distances;
+		#trial times
+		self.trial_times = trialData.trial_times;
+		self.initiation_latency = trialData.trial_times.initiation_latency*1000;
+		self.response_time = self.trial_times.response_time*1000; #put every time into seconds  
+		self.movement_time = self.response_time-self.initiation_latency;
+		#response and results
+		self.reponse = str(trialData.response); #letter corresponding to presented
+		self.result = trialData.result; #right or wrong, 1 or 0
+		self.selected_type = trialData.selected_type; #precense or absence
+		self.abort = trialData.abort_trial;
+		#finally, eye position and pupil size information
+		self.eyeX = trialData.eyeX;
+		self.eyeY = trialData.eyeY;
+		self.p_size = trialData.pSize;
+		self.sample_times = trialData.sampleTimes;
+		self.drift_shift = trialData.drift_shift;
