@@ -20,7 +20,7 @@ shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # '/Users/j
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
 individ_subject_data = shelve.open(shelvepath+'individ_ratio_nt_data');
 
-ids=['1','2','3']; #'jpw'
+ids=['1','2','3','4','6']; #'jpw'
 
 # 1 targets: nr dists was 2,3,5,10,14
 # 2 targets: 3, 4, 6, 10, 13

@@ -10,8 +10,8 @@ import shelve #for database writing and reading
 
 #screen dimensions for the office ocmputer = (19.2,10.44)
 
-datapath = '/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #
-shelvepath =  '/Users/james/Documents/Python/ratio_nt/data/'; #'/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # 
+datapath = '/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #
+shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # '/Users/james/Documents/Python/ratio_nt/data/'; #
 savepath = '/Users/james/Documents/Python/ratio_nt/figures/'; #'/Users/jameswilmott/Documents/Python/ratio_nt/figures/'; # 
 
 #import the persistent database to save data analysis for future use (plotting)
@@ -45,7 +45,7 @@ matplotlib.pyplot.rc('font',weight='bold');
 ## plot ratios on X axis
 # RT
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(400,1000); ax1.set_yticks(arange(450,1001,50));
+ax1.set_ylim(600,900); ax1.set_yticks(arange(650,901,50));
 ax1.set_xlim([0.75, 0]);  ax1.set_xticks([2.0/3,1.0/2,1.0/3,1.0/5,2.0/13,1.0/10,1.0/14]);
 labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]='2/3'; labels[1]='1/2'; labels[2]='1/3'; labels[3]='1/5'; labels[4]='2/13'; labels[5]='1/10'; labels[6]='1/14';
 ax1.set_xticklabels(labels,size = 12);
@@ -131,12 +131,11 @@ ax1.legend(handles=[oneline,twoline],loc = 'best',ncol=2,fontsize = 14);
 # savefig(savepath+filename+'.eps',dpi=400);
 show();
 
-
 ## Plot with nr stim on x axis
 
 # RT
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(400,1000); ax1.set_yticks(arange(450,1001,50));
+ax1.set_ylim(600,900); ax1.set_yticks(arange(650,901,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
@@ -312,7 +311,7 @@ show();
 
 # RT
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(400,1000); ax1.set_yticks(arange(450,1001,50));
+ax1.set_ylim(600,900); ax1.set_yticks(arange(650,901,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
@@ -482,7 +481,7 @@ show();
 
 # RT
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(400,1000); ax1.set_yticks(arange(450,1001,50));
+ax1.set_ylim(600,900); ax1.set_yticks(arange(650,901,50));
 ax1.set_xlim([2, 16]);  ax1.set_xticks([3,4,5,6,7,8,9,10,11,12,13,14,15]);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Number of Total Stimuli', size=18);
 #first off get both number of targets search functions together
