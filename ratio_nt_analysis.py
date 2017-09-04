@@ -13,8 +13,8 @@ from collections import namedtuple
 import pyvttbl as pt
 pc = lambda x:sum(x)/float(len(x)); #create a percent correct lambda function
 
-datapath = '/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #
-shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # '/Users/james/Documents/Python/ratio_nt/data/'; #  
+datapath = '/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #
+shelvepath =  '/Users/james/Documents/Python/ratio_nt/data/'; # '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; #  
 
 #import the persistent database to save data analysis for future use (plotting)
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
