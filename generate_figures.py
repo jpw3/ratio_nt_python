@@ -573,13 +573,13 @@ match_x = array([2.0/3,1.0/2,1.0/3,1.0/5,2.0/13]);
 colors=['lightsteelblue','dimgrey','limegreen'];
 for x,y,c in zip([nomatch_x, match_x, st_x],[nomatch_pcs, match_pcs, st_pcs], colors):
     ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0);
-# if id=='agg':
-#     nomatch_bsems =  [db['%s_2_targs_shapes_%s_%s_dists_%s_pc_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
-#     match_bsems =  [db['%s_2_targs_shapes_%s_%s_dists_%s_pc_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
-#     st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_pc_SEMs'%(id,d,(1+d))] for d in [2,3,5,10,14]];
-#     for x,y,yerrrs,c in zip([st_x, nomatch_x, match_x],[st_pcs, nomatch_pcs, match_pcs],[st_bsems, nomatch_bsems, match_bsems],colors):
-#         for i,yerr in enumerate(yerrors):    
-#             ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, capsize=10, fmt='none');  
+if id=='agg':
+    nomatch_bsems =  [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
+    match_bsems =  [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
+    st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_pc_SEMs'%(id,d,(1+d))] for d in [2,3,5,10,14]];
+    for x,y,yerrors,c in zip([nomatch_x, match_x, st_x],[nomatch_pcs, match_pcs, st_pcs],[nomatch_bsems, match_bsems, st_bsems],colors):
+        for i,yerr in enumerate(yerrors):
+            ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, capsize=10, fmt='none');  
 #assign some configurations to the plots
 title('Accuracy by Number of Stimuli', fontsize = 22);
 ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
@@ -612,13 +612,13 @@ match_x = 2 + array([3,4,6,10,13]);
 colors=['lightsteelblue','dimgrey','limegreen'];
 for x,y,c in zip([nomatch_x, match_x, st_x],[nomatch_pcs, match_pcs, st_pcs], colors):
     ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0);
-# if id=='agg':
-#     nomatch_bsems =  [db['%s_2_targs_shapes_%s_%s_dists_%s_pc_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
-#     match_bsems =  [db['%s_2_targs_shapes_%s_%s_dists_%s_pc_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
-#     st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_pc_SEMs'%(id,d,(1+d))] for d in [2,3,5,10,14]];
-#     for x,y,yerrrs,c in zip([st_x, nomatch_x, match_x],[st_pcs, nomatch_pcs, match_pcs],[st_bsems, nomatch_bsems, match_bsems],colors):
-#         for i,yerr in enumerate(yerrors):    
-#             ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, capsize=10, fmt='none');  
+if id=='agg':
+    nomatch_bsems =  [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
+    match_bsems =  [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
+    st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_pc_SEMs'%(id,d,(1+d))] for d in [2,3,5,10,14]];    
+    for x,y,yerrors,c in zip([nomatch_x, match_x, st_x],[nomatch_pcs, match_pcs, st_pcs],[nomatch_bsems, match_bsems, st_bsems,],colors):
+        for i,yerr in enumerate(yerrors):    
+            ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, capsize=10, fmt='none');  
 #assign some configurations to the plots
 title('Accuracy by Number of Stimuli', fontsize = 22);
 ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
