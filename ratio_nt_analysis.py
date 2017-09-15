@@ -13,14 +13,14 @@ from collections import namedtuple
 import pyvttbl as pt
 pc = lambda x:sum(x)/float(len(x)); #create a percent correct lambda function
 
-datapath = '/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #
-shelvepath =  '/Users/james/Documents/Python/ratio_nt/data/'; # '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; #  
+datapath = '/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #
+shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # '/Users/james/Documents/Python/ratio_nt/data/'; #  
 
 #import the persistent database to save data analysis for future use (plotting)
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
 individ_subject_data = shelve.open(shelvepath+'individ_ratio_nt_data');
 
-ids=['1','2','3','4','5','6','7']; #'jpw'
+ids=['1','2','3','4','5','6','7','8','9']; #'jpw'
 
 # 1 targets: nr dists was 2,3,5,10,14
 # 2 targets: 3, 4, 6, 10, 13
@@ -298,8 +298,54 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 	
 			db.sync();			
 	print 'Completed computation of target shapes matching data...';
-				
 
+
+def computeTargetShapesMatchXHF(trial_matrix, id='agg'):
+	#tBreak down the same vs. different HF comparison by whether the target shapes match or don't
+	#do so by looking at each level of the number of distractors
+	if id=='agg':
+		db=subject_data;
+		#add in anova stuff later
+	else:
+		db=individ_subject_data;
+	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
+	for tsm,bool in zip(['match','not_match'],[1,0]):
+		#now break it down by HF for two targets (same or different)
+		for hf,hf_bool in zip(['same','diff'],[1,0]):
+			#then go through the number of distractors
+			for d in [3,4,6,10,13]:
+				#collect the appropriate results and RTs for this condition
+				all_res_matrix = [[tee.result for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.same_hf==hf_bool)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors)))] for ts in trial_matrix];
+				all_rt_matrix = [[tee.response_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.same_hf==hf_bool)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
+				all_il_matrix = [[tee.initiation_latency for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.same_hf==hf_bool)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
+				all_mt_matrix = [[tee.movement_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d)&(tee.same_hf==hf_bool)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];		
+				# #get individual rt sds and il sds to 'shave' the rts of extreme outliers
+				# ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
+				# rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
+				# il_matrix=[[i for i in individ_ils if (i>=(mean(individ_ils)-(3*ind_il_sd)))&(i<=(mean(individ_ils)+(3*ind_il_sd)))] for individ_ils,ind_il_sd in zip(all_il_matrix,ind_il_sds)];
+				# mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
+				# rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];	
+				#for now, dont' shave the RTs 
+				rts = [r for y in all_rt_matrix for r in y]; ils = [i for l in all_il_matrix for i in l];
+				mts = [ms for j in all_mt_matrix for ms in j];
+				res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not	
+				if len(rts)==0:
+					continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)
+				#now find the relevant stats and set up the data into the database
+				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mean_rt'%(id,tsm,d,(2+d))] = mean(rts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_median_rt'%(id,tsm,d,(2+d))] = median(rts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_var_rt'%(id,tsm,d,(2+d))] = var(rts);
+				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mean_il'%(id,tsm,d,(2+d))] = mean(ils); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_median_il'%(id,tsm,d,(2+d))] = median(ils); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_var_il'%(id,tsm,d,(2+d))] = var(ils);
+				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mean_mt'%(id,tsm,d,(2+d))] = mean(mts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_median_mt'%(id,tsm,d,(2+d))] = median(mts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_var_mt'%(id,tsm,d,(2+d))] = var(mts);
+				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_pc'%(id,tsm,d,(2+d))] = pc(res);
+				if id=='agg':
+				#calculate the SEMs
+					db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_rt_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_il_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_il_matrix, 'time');
+					db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mt_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_pc_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_res_matrix, 'result');
+				# do ANOVA stuff
+		
+				db.sync();			
+	print 'Completed computation of target shapes matching by hemifield relation data...';
+
+				
 def compute_BS_SEM(data_matrix, type):
     #calculate the between-subjects standard error of the mean. data_matrix should be matrix of trials including each subject
     #should only pass data matrix into this function after segmenting into relevant conditions
