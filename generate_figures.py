@@ -18,8 +18,6 @@ savepath = '/Users/jameswilmott/Documents/Python/ratio_nt/figures/'; # '/Users/j
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
 individ_subject_data = shelve.open(shelvepath+'individ_ratio_nt_data');
 
-ids=['1']; #'jpw'
-
 id = raw_input('Input I.D. [agg for all subjects, otherwise specify a single subject]:   ');
 
 if id=='agg':
@@ -730,13 +728,13 @@ nomatch_diff_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_hf_mean_rt
 match_diff_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_hf_mean_rt'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
 #plot them
 colors=['dodgerblue','dodgerblue','darkorange','darkorange']; linestyles = ['solid','dashed','solid','dashed'];
-for y,c,ls in zip([nomatch_same_rts, match_same_rts, nomatch_diff_rts, match_diff_rts], colors, linstyles):
+for y,c,ls in zip([nomatch_same_rts, match_same_rts, nomatch_diff_rts, match_diff_rts], colors, linestyles):
     ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0, ls = ls);
 if id=='agg':
-    nomatch_same_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_same_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
-    match_same_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_same_rt_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
-    nomatch_diff_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
-    match_diff_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_rt_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
+    nomatch_same_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_same_hf_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
+    match_same_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_same_hf_rt_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
+    nomatch_diff_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_hf_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
+    match_diff_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_hf_rt_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
     for y,yerrors,c in zip([nomatch_same_rts, match_same_rts, nomatch_diff_rts, match_diff_rts],[nomatch_same_bsems, match_same_bsems, nomatch_diff_bsems, match_diff_bsems],colors):
         for i,yerr in enumerate(yerrors):
             ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, capsize=10, fmt='none');  
@@ -745,9 +743,44 @@ title('Reaction Time by Ratio', fontsize = 22);
 ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
 ax1.spines['bottom'].set_linewidth(2.0); ax1.spines['left'].set_linewidth(2.0);
 ax1.yaxis.set_ticks_position('left'); ax1.xaxis.set_ticks_position('bottom');
-oneline=mlines.Line2D([],[],color='lightsteelblue',lw=6,label='No Match'); twoline=mlines.Line2D([],[],color='dimgrey',lw=6,label='Yes Match');
-threeline=mlines.Line2D([],[],color='limegreen',lw=6,label='One Target');
-ax1.legend(handles=[oneline,twoline, threeline],loc = 'best',ncol=2,fontsize = 14);
+oneline=mlines.Line2D([],[],color='dodgerblue',lw=6,label='Same Hemifield'); twoline=mlines.Line2D([],[],color='darkorange',lw=6,label='Different Hemifields');
+ax1.legend(handles=[oneline,twoline],loc = 'best',ncol=2,fontsize = 14);
+
+
+
+#pc
+fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
+ax1.set_ylim(0.75, 1.01); ax1.set_yticks(arange(0.8, 1.001, 0.05));
+ax1.set_xlim([0.75, 0]);  ax1.set_xticks([2.0/3,1.0/2,1.0/3,1.0/5,2.0/13]);
+labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]='2/3'; labels[1]='1/2'; labels[2]='1/3'; labels[3]='1/5'; labels[4]='2/13'; 
+ax1.set_xticklabels(labels,size = 12);
+ax1.set_ylabel('Proportion Correct',size=18); ax1.set_xlabel('Ratio of Targets:Distractors', size=18);
+#first off get both number of targets search functions together
+x = array([2.0/3,1.0/2,1.0/3,1.0/5,2.0/13]);
+nomatch_same_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_same_hf_pc'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
+match_same_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_same_hf_pc'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
+nomatch_diff_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_hf_pc'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
+match_diff_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_hf_pc'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
+#plot them
+colors=['dodgerblue','dodgerblue','darkorange','darkorange']; linestyles = ['solid','dashed','solid','dashed'];
+for y,c,ls in zip([nomatch_same_rts, match_same_rts, nomatch_diff_rts, match_diff_rts], colors, linestyles):
+    ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0, ls = ls);
+if id=='agg':
+    nomatch_same_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_same_hf_pc_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
+    match_same_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_same_hf_pc_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
+    nomatch_diff_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_hf_pc_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
+    match_diff_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_hf_pc_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
+    for y,yerrors,c in zip([nomatch_same_rts, match_same_rts, nomatch_diff_rts, match_diff_rts],[nomatch_same_bsems, match_same_bsems, nomatch_diff_bsems, match_diff_bsems],colors):
+        for i,yerr in enumerate(yerrors):
+            ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, capsize=10, fmt='none');  
+#assign some configurations to the plots
+title('Accuracy by Ratio', fontsize = 22);
+ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
+ax1.spines['bottom'].set_linewidth(2.0); ax1.spines['left'].set_linewidth(2.0);
+ax1.yaxis.set_ticks_position('left'); ax1.xaxis.set_ticks_position('bottom');
+oneline=mlines.Line2D([],[],color='dodgerblue',lw=6,label='Same Hemifield'); twoline=mlines.Line2D([],[],color='darkorange',lw=6,label='Different Hemifields');
+ax1.legend(handles=[oneline,twoline],loc = 'best',ncol=2,fontsize = 14);
+
 
 
 

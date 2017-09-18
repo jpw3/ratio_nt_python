@@ -40,6 +40,7 @@ def getStats(id='agg',ids = ids):
 	computeNrStim(trials, id);
 	computeHFRelation(trials, id);
 	computeTargetShapesMatch(trials, id);
+	computeTargetShapesMatchXHF(trials, id);
 	#simple effects stuff
 	computeSimpleEffectNrTargets(trials, id);
 	computeSimpleEffectHFRelation(trials, id);
