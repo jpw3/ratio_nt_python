@@ -729,19 +729,15 @@ match_same_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_same_hf_mean_rt'%
 nomatch_diff_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_hf_mean_rt'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
 match_diff_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_hf_mean_rt'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
 #plot them
-colors=['lightsteelblue','dimgrey','limegreen'];
-
-#from here below I need to figure out the color/linestyle scheme I want to use for the plotting here. DO I want to do two toned, or do I want to do two colors with two linestyles?
-# here's multiple colors for the same line: http://matplotlib.org/examples/pylab_examples/multicolored_line.html
-
-
-for y,c in zip([nomatch_rts, match_rts, st_rts], colors):
-    ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0);
+colors=['dodgerblue','dodgerblue','darkorange','darkorange']; linestyles = ['solid','dashed','solid','dashed'];
+for y,c,ls in zip([nomatch_same_rts, match_same_rts, nomatch_diff_rts, match_diff_rts], colors, linstyles):
+    ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0, ls = ls);
 if id=='agg':
-    nomatch_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
-    match_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
-    st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,d,(1+d))] for d in [2,3,5,10,14]];
-    for x,y,yerrors,c in zip([nomatch_x, match_x, st_x],[nomatch_rts, match_rts, st_rts],[nomatch_bsems, match_bsems, st_bsems],colors):
+    nomatch_same_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_same_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
+    match_same_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_same_rt_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
+    nomatch_diff_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
+    match_diff_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_diff_rt_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
+    for y,yerrors,c in zip([nomatch_same_rts, match_same_rts, nomatch_diff_rts, match_diff_rts],[nomatch_same_bsems, match_same_bsems, nomatch_diff_bsems, match_diff_bsems],colors):
         for i,yerr in enumerate(yerrors):
             ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, capsize=10, fmt='none');  
 #assign some configurations to the plots
@@ -752,4 +748,8 @@ ax1.yaxis.set_ticks_position('left'); ax1.xaxis.set_ticks_position('bottom');
 oneline=mlines.Line2D([],[],color='lightsteelblue',lw=6,label='No Match'); twoline=mlines.Line2D([],[],color='dimgrey',lw=6,label='Yes Match');
 threeline=mlines.Line2D([],[],color='limegreen',lw=6,label='One Target');
 ax1.legend(handles=[oneline,twoline, threeline],loc = 'best',ncol=2,fontsize = 14);
+
+
+
+# here's multiple colors for the same line: http://matplotlib.org/examples/pylab_examples/multicolored_line.html
 

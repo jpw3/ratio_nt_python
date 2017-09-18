@@ -332,14 +332,14 @@ def computeTargetShapesMatchXHF(trial_matrix, id='agg'):
 				if len(rts)==0:
 					continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)
 				#now find the relevant stats and set up the data into the database
-				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mean_rt'%(id,tsm,d,(2+d))] = mean(rts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_median_rt'%(id,tsm,d,(2+d))] = median(rts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_var_rt'%(id,tsm,d,(2+d))] = var(rts);
-				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mean_il'%(id,tsm,d,(2+d))] = mean(ils); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_median_il'%(id,tsm,d,(2+d))] = median(ils); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_var_il'%(id,tsm,d,(2+d))] = var(ils);
-				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mean_mt'%(id,tsm,d,(2+d))] = mean(mts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_median_mt'%(id,tsm,d,(2+d))] = median(mts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_var_mt'%(id,tsm,d,(2+d))] = var(mts);
-				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_pc'%(id,tsm,d,(2+d))] = pc(res);
+				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mean_rt'%(id,tsm,d,(2+d),hf)] = mean(rts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_median_rt'%(id,tsm,d,(2+d),hf)] = median(rts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_var_rt'%(id,tsm,d,(2+d),hf)] = var(rts);
+				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mean_il'%(id,tsm,d,(2+d),hf)] = mean(ils); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_median_il'%(id,tsm,d,(2+d),hf)] = median(ils); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_var_il'%(id,tsm,d,(2+d),hf)] = var(ils);
+				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mean_mt'%(id,tsm,d,(2+d),hf)] = mean(mts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_median_mt'%(id,tsm,d,(2+d),hf)] = median(mts); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_var_mt'%(id,tsm,d,(2+d),hf)] = var(mts);
+				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_pc'%(id,tsm,d,(2+d),hf)] = pc(res);
 				if id=='agg':
 				#calculate the SEMs
-					db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_rt_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_il_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_il_matrix, 'time');
-					db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mt_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_pc_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_res_matrix, 'result');
+					db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_rt_SEMs'%(id,tsm,d,(2+d),hf)] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_il_SEMs'%(id,tsm,d,(2+d),hf)] = compute_BS_SEM(all_il_matrix, 'time');
+					db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mt_SEMs'%(id,tsm,d,(2+d),hf)] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_pc_SEMs'%(id,tsm,d,(2+d),hf)] = compute_BS_SEM(all_res_matrix, 'result');
 				# do ANOVA stuff
 		
 				db.sync();			
