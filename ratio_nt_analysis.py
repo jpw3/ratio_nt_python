@@ -13,17 +13,23 @@ from collections import namedtuple
 import pyvttbl as pt
 pc = lambda x:sum(x)/float(len(x)); #create a percent correct lambda function
 
-datapath = '/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #
-shelvepath =  '/Users/james/Documents/Python/ratio_nt/data/'; # '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; #  
+datapath = '/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #
+shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; #  '/Users/james/Documents/Python/ratio_nt/data/'; # 
 
 #import the persistent database to save data analysis for future use (plotting)
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
 individ_subject_data = shelve.open(shelvepath+'individ_ratio_nt_data');
 
-ids=['1','2','3','4','5','6','7','8','9']; #'jpw'
+ids=['1','2','3','4','5','6','7','8','9','10','11']; #'jpw'
 
 # 1 targets: nr dists was 2,3,5,10,14
 # 2 targets: 3, 4, 6, 10, 13
+
+#define these for use in target shapes match vs. single target
+global tsm_st_df;
+tsm_st_df = pt.DataFrame();
+global tsm_st_score;
+tsm_st_score = namedtuple('score',['id','rt','condition','t_d_ratio']);
 
 # Data Analysis Methods #########################################################################################################
 
@@ -168,22 +174,26 @@ def computeSimpleEffectTargetsMatch(trial_matrix, id='agg'):
 
 
 def computeNrStim(trial_matrix, id='agg'):
-    if id=='agg':
-        db=subject_data;
-        #add in anova stuff later
-    else:
-        db=individ_subject_data;
+	if id=='agg':
+		db=subject_data;
+		#add in anova stuff later
+		df = pt.DataFrame();
+		pc_df = pt.DataFrame();
+		score = namedtuple('score',['id','rt','nr_targets','t_d_ratio']);
+		pc_score = namedtuple('score',['id','pc','nr_targets','t_d_ratio']);
+	else:
+		db=individ_subject_data;
     #here cycle through the total number of stimuli and number of distractors, finding the RT and accuracy for each combo
-    for nr_t, nr_dists in zip([1,2],[[2,3,5,10,14],[3,4,6,10,13]]):
-        print 'Number of targets: %d'%nr_t; print ;
-        for d in nr_dists:
-            print 'Number of dists: %d'%d; print ;
+	for nr_t, nr_dists in zip([1,2],[[2,3,5,10,14],[3,4,6,10,13]]):
+		print 'Number of targets: %d'%nr_t; print ;
+		for d in nr_dists:
+			print 'Number of dists: %d'%d; print ;
             #collect the appropriate results and RTs for this condition
-            all_res_matrix = [[tee.result for tee in ts if ((tee.nr_targets==nr_t)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors)))] for ts in trial_matrix];
-            all_rt_matrix = [[tee.response_time for tee in ts if ((tee.nr_targets==nr_t)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
-            all_il_matrix = [[tee.initiation_latency for tee in ts if ((tee.nr_targets==nr_t)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
-            all_mt_matrix = [[tee.movement_time for tee in ts if ((tee.nr_targets==nr_t)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
-            res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not
+			all_res_matrix = [[tee.result for tee in ts if ((tee.nr_targets==nr_t)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors)))] for ts in trial_matrix];
+			all_rt_matrix = [[tee.response_time for tee in ts if ((tee.nr_targets==nr_t)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
+			all_il_matrix = [[tee.initiation_latency for tee in ts if ((tee.nr_targets==nr_t)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
+			all_mt_matrix = [[tee.movement_time for tee in ts if ((tee.nr_targets==nr_t)&(tee.nr_distractors==d)&(tee.nr_stimuli==(tee.nr_targets+tee.nr_distractors))&(tee.result==1))] for ts in trial_matrix];
+			res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not
             # #get individual rt sds and il sds to 'shave' the rts of extreme outliers
             # ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
             # rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
@@ -191,23 +201,46 @@ def computeNrStim(trial_matrix, id='agg'):
             # mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
             # rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];	
             #for now, dont' shave the RTs 
-            rts = [r for y in all_rt_matrix for r in y]; ils = [i for l in all_il_matrix for i in l];
-            mts = [ms for j in all_mt_matrix for ms in j];
-            if len(rts)==0:
-                continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)
+			rts = [r for y in all_rt_matrix for r in y]; ils = [i for l in all_il_matrix for i in l];
+			mts = [ms for j in all_mt_matrix for ms in j];
+			if len(rts)==0:
+				continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)
             #now find the relevant stats and set up the data into the database
-            db['%s_%s_targs_%s_dists_%s_nr_stim_mean_rt'%(id,nr_t,d,(nr_t+d))] = mean(rts); db['%s_%s_targs_%s_dists_%s_nr_stim_median_rt'%(id,nr_t,d,(nr_t+d))] = median(rts); db['%s_%s_targs_%s_dists_%s_nr_stim_var_rt'%(id,nr_t,d,(nr_t+d))] = var(rts);
-            db['%s_%s_targs_%s_dists_%s_nr_stim_mean_il'%(id,nr_t,d,(nr_t+d))] = mean(ils); db['%s_%s_targs_%s_dists_%s_nr_stim_median_il'%(id,nr_t,d,(nr_t+d))] = median(ils); db['%s_%s_targs_%s_dists_%s_nr_stim_var_il'%(id,nr_t,d,(nr_t+d))] = var(ils);
-            db['%s_%s_targs_%s_dists_%s_nr_stim_mean_mt'%(id,nr_t,d,(nr_t+d))] = mean(mts); db['%s_%s_targs_%s_dists_%s_nr_stim_median_mt'%(id,nr_t,d,(nr_t+d))] = median(mts); db['%s_%s_targs_%s_dists_%s_nr_stim_var_mt'%(id,nr_t,d,(nr_t+d))] = var(mts);
-            db['%s_%s_targs_%s_dists_%s_nr_stim_pc'%(id,nr_t,d,(nr_t+d))] = pc(res);
-            if id=='agg':
+			db['%s_%s_targs_%s_dists_%s_nr_stim_mean_rt'%(id,nr_t,d,(nr_t+d))] = mean(rts); db['%s_%s_targs_%s_dists_%s_nr_stim_median_rt'%(id,nr_t,d,(nr_t+d))] = median(rts); db['%s_%s_targs_%s_dists_%s_nr_stim_var_rt'%(id,nr_t,d,(nr_t+d))] = var(rts);
+			db['%s_%s_targs_%s_dists_%s_nr_stim_mean_il'%(id,nr_t,d,(nr_t+d))] = mean(ils); db['%s_%s_targs_%s_dists_%s_nr_stim_median_il'%(id,nr_t,d,(nr_t+d))] = median(ils); db['%s_%s_targs_%s_dists_%s_nr_stim_var_il'%(id,nr_t,d,(nr_t+d))] = var(ils);
+			db['%s_%s_targs_%s_dists_%s_nr_stim_mean_mt'%(id,nr_t,d,(nr_t+d))] = mean(mts); db['%s_%s_targs_%s_dists_%s_nr_stim_median_mt'%(id,nr_t,d,(nr_t+d))] = median(mts); db['%s_%s_targs_%s_dists_%s_nr_stim_var_mt'%(id,nr_t,d,(nr_t+d))] = var(mts);
+			db['%s_%s_targs_%s_dists_%s_nr_stim_pc'%(id,nr_t,d,(nr_t+d))] = pc(res);
+			if id=='agg':
                 #calculate the SEMs
-                db['%s_%s_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,nr_t,d,(nr_t+d))] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_%s_targs_%s_dists_%s_nr_stim_il_SEMs'%(id,nr_t,d,(nr_t+d))] = compute_BS_SEM(all_il_matrix, 'time');
-                db['%s_%s_targs_%s_dists_%s_nr_stim_mt_SEMs'%(id,nr_t,d,(nr_t+d))] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_%s_targs_%s_dists_%s_nr_stim_pc_SEMs'%(id,nr_t,d,(nr_t+d))] = compute_BS_SEM(all_res_matrix, 'result');
-                # do ANOVA stuff
-                
-            db.sync();
-    print 'Completed computation of number of stimuli data...';
+				db['%s_%s_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,nr_t,d,(nr_t+d))] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_%s_targs_%s_dists_%s_nr_stim_il_SEMs'%(id,nr_t,d,(nr_t+d))] = compute_BS_SEM(all_il_matrix, 'time');
+				db['%s_%s_targs_%s_dists_%s_nr_stim_mt_SEMs'%(id,nr_t,d,(nr_t+d))] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_%s_targs_%s_dists_%s_nr_stim_pc_SEMs'%(id,nr_t,d,(nr_t+d))] = compute_BS_SEM(all_res_matrix, 'result');
+				#append all the datae for each subject together in the dataframe for use in ANOVA
+				#only do ANOVAs for the common ratio condition: 1/2, 1/3, 1/5
+				if ((float(nr_t)/d)==(1.0/2))|((float(nr_t)/d)==(1.0/3))|((float(nr_t)/d)==(1.0/5)):
+					for i,rt_scores,res_scores in zip(linspace(1,len(all_rt_matrix),len(all_rt_matrix)),all_rt_matrix,all_res_matrix):
+						#get the percent correct and correct it if necessary
+						p = pc(res_scores);
+						if p==1.0:
+							p = p-0.000000000001;
+						df.insert(score(i,mean(rt_scores),nr_t,float(nr_t)/d)._asdict());
+						pc_df.insert(pc_score(i,p,nr_t,float(nr_t)/d)._asdict());
+						#insert into the DF for use with target shapes match data
+						if nr_t==1:
+							tsm_st_df.insert(tsm_st_score(i,mean(rt_scores),'single_target',float(nr_t)/d)._asdict());			
+			db.sync();
+	#now print the ANOVA results
+	if id=='agg':
+		print; print('##################### NUMBER OF TARGETS BY RATIO OF TARGETS:DISTRACTORS ANOVA RESULTS  #####################'); print ;
+		print; print ' # Reaction Time Statistics #'; print ;
+		print; print 'Omnibus: '; print;
+		print(df.anova('rt',sub='id',wfactors=['nr_targets','t_d_ratio']));
+		raw_input("Press ENTER to continue...");	
+		print; print ' # Accuracy Statistics #'; print ;
+		print; print 'Omnibus: '; print;
+		print(pc_df.anova('pc',sub='id',wfactors=['nr_targets','t_d_ratio']));
+		raw_input("Press ENTER to continue...");				
+			
+	print 'Completed computation of number of stimuli data...';
 
 
 def computeHFRelation(trial_matrix, id='agg'):
@@ -260,7 +293,10 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 	#for two target trials for each level of the number of stimuli.
 	if id=='agg':
 		db=subject_data;
-		#add in anova stuff later
+		df = pt.DataFrame();
+		pc_df = pt.DataFrame();
+		score = namedtuple('score',['id','rt','target_shapes_match','t_d_ratio']);
+		pc_score = namedtuple('score',['id','pc','target_shapes_match','t_d_ratio']);
 	else:
 		db=individ_subject_data;
 	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
@@ -296,8 +332,37 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_il_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_il_matrix, 'time');
 				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mt_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_res_matrix, 'result');
 			# do ANOVA stuff
-	
-			db.sync();			
+				for i,rt_scores,res_scores in zip(linspace(1,len(all_rt_matrix),len(all_rt_matrix)),all_rt_matrix,all_res_matrix):
+					#get the percent correct and correct it if necessary
+					p = pc(res_scores);
+					if p==1.0:
+						p = p-0.000000000001;
+					df.insert(score(i,mean(rt_scores),tsm,float(2)/d)._asdict());
+					pc_df.insert(pc_score(i,p,tsm,float(2)/d)._asdict());
+					#insert into the DF for use with target shapes match data
+					if ((float(2)/d)==(1.0/2))|((float(2)/d)==(1.0/3))|((float(2)/d)==(1.0/5)):
+						tsm_st_df.insert(tsm_st_score(i,mean(rt_scores),tsm,float(2)/d)._asdict());	
+			db.sync();
+
+	if id=='agg':	
+		print; print('##################### TARGET SHAPES MATCH BY RATIO OF TARGETS:DISTRACTORS ANOVA RESULTS  #####################'); print ;
+		print; print ' # Reaction Time Statistics #'; print ;
+		print; print 'Omnibus: '; print;
+		print(df.anova('rt',sub='id',wfactors=['target_shapes_match','t_d_ratio']));
+		raw_input("Press ENTER to continue...");	
+		print; print ' # Accuracy Statistics #'; print ;
+		print; print 'Omnibus: '; print;
+		print(pc_df.anova('pc',sub='id',wfactors=['target_shapes_match','t_d_ratio']));
+		raw_input("Press ENTER to continue...");				
+
+		#then do the target shapes match vs. single target cases
+		print; print('##################### TARGET SHAPES MATCH AND SINGLE TARGET CASES BY RATIO OF TARGETS:DISTRACTORS ANOVA RESULTS  #####################'); print ;
+		print; print ' # Reaction Time Statistics #'; print ;
+		print; print 'Omnibus: '; print;
+		print(tsm_st_df.anova('rt',sub='id',wfactors=['condition','t_d_ratio']));
+		raw_input("Press ENTER to continue...");	
+
+			
 	print 'Completed computation of target shapes matching data...';
 
 
