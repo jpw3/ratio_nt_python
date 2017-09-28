@@ -181,6 +181,9 @@ def computeNrStim(trial_matrix, id='agg'):
 		pc_df = pt.DataFrame();
 		score = namedtuple('score',['id','rt','nr_targets','t_d_ratio']);
 		pc_score = namedtuple('score',['id','pc','nr_targets','t_d_ratio']);
+		st_df = pt.DataFrame();
+		mt_df = pt.DataFrame();
+		simp_score = namedtuple('score',['id','rt','t_d_ratio']);
 	else:
 		db=individ_subject_data;
     #here cycle through the total number of stimuli and number of distractors, finding the RT and accuracy for each combo
@@ -225,8 +228,12 @@ def computeNrStim(trial_matrix, id='agg'):
 						df.insert(score(i,mean(rt_scores),nr_t,float(nr_t)/d)._asdict());
 						pc_df.insert(pc_score(i,p,nr_t,float(nr_t)/d)._asdict());
 						#insert into the DF for use with target shapes match data
+						#also look for the simple effects of ratio on each level of targets number
 						if nr_t==1:
-							tsm_st_df.insert(tsm_st_score(i,mean(rt_scores),'single_target',float(nr_t)/d)._asdict());			
+							tsm_st_df.insert(tsm_st_score(i,mean(rt_scores),'single_target',float(nr_t)/d)._asdict());
+							st_df.insert(simp_score(i,mean(rt_scores),float(nr_t)/d)._asdict());
+						elif nr_t==2:
+							mt_df.insert(simp_score(i,mean(rt_scores),float(nr_t)/d)._asdict());		
 			db.sync();
 	#now print the ANOVA results
 	if id=='agg':
@@ -238,7 +245,16 @@ def computeNrStim(trial_matrix, id='agg'):
 		print; print ' # Accuracy Statistics #'; print ;
 		print; print 'Omnibus: '; print;
 		print(pc_df.anova('pc',sub='id',wfactors=['nr_targets','t_d_ratio']));
-		raw_input("Press ENTER to continue...");				
+		raw_input("Press ENTER to continue...");
+		
+		print; print('##################### SIMPLE EFFECTS OF RATIO FOR EACH LEVEL OF NR TARGETS ANOVA RESULTS  #####################'); print ;
+		print; print ' # Reaction Time Statistics #'; print ;
+		print; print 'SINGLE TARGET: '; print;
+		print(st_df.anova('rt',sub='id',wfactors=['t_d_ratio']));
+		raw_input("Press ENTER to continue...");
+		print; print 'TWO TARGETS: '; print;
+		print(mt_df.anova('rt',sub='id',wfactors=['t_d_ratio']));	
+		
 			
 	print 'Completed computation of number of stimuli data...';
 
@@ -297,6 +313,9 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 		pc_df = pt.DataFrame();
 		score = namedtuple('score',['id','rt','target_shapes_match','t_d_ratio']);
 		pc_score = namedtuple('score',['id','pc','target_shapes_match','t_d_ratio']);
+		match_df = pt.DataFrame();
+		no_match_df = pt.DataFrame();
+		simp_score = namedtuple('score',['id','rt','t_d_ratio']);
 	else:
 		db=individ_subject_data;
 	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
@@ -341,7 +360,13 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 					pc_df.insert(pc_score(i,p,tsm,float(2)/d)._asdict());
 					#insert into the DF for use with target shapes match data
 					if ((float(2)/d)==(1.0/2))|((float(2)/d)==(1.0/3))|((float(2)/d)==(1.0/5)):
-						tsm_st_df.insert(tsm_st_score(i,mean(rt_scores),tsm,float(2)/d)._asdict());	
+						tsm_st_df.insert(tsm_st_score(i,mean(rt_scores),tsm,float(2)/d)._asdict());
+					#insert into the simple efects anovas
+					if tsm=='match':
+						match_df.insert(simp_score(i,mean(rt_scores),float(2)/d)._asdict());
+					elif tsm=='not_match':
+						no_match_df.insert(simp_score(i,mean(rt_scores),float(2)/d)._asdict());
+						
 			db.sync();
 
 	if id=='agg':	
@@ -362,7 +387,15 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 		print(tsm_st_df.anova('rt',sub='id',wfactors=['condition','t_d_ratio']));
 		raw_input("Press ENTER to continue...");	
 
-			
+		print; print('##################### SIMPLE EFFECTS OF RATIO FOR EACH LEVEL OF TARGETS SHAPE MATCH ANOVA RESULTS  #####################'); print ;
+		print; print ' # Reaction Time Statistics #'; print ;
+		print; print 'TARGET SHAPES MATCH: '; print;
+		print(match_df.anova('rt',sub='id',wfactors=['t_d_ratio']));
+		raw_input("Press ENTER to continue...");
+		print; print 'TARGET SHAPES DONT MATCH: '; print;
+		print(no_match_df.anova('rt',sub='id',wfactors=['t_d_ratio']));		
+		
+		
 	print 'Completed computation of target shapes matching data...';
 
 
