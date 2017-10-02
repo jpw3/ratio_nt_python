@@ -10,11 +10,11 @@ import shelve #for database writing and reading
 
 #screen dimensions for the office ocmputer = (19.2,10.44)
 
-datapath = '/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #
-shelvepath =  '/Users/james/Documents/Python/ratio_nt/data/'; #'/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # 
-savepath = '/Users/james/Documents/Python/ratio_nt/figures/'; #'/Users/jameswilmott/Documents/Python/ratio_nt/figures/'; # 
+datapath = '/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #
+shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # '/Users/james/Documents/Python/ratio_nt/data/'; #
+savepath = '/Users/jameswilmott/Documents/Python/ratio_nt/figures/'; # '/Users/james/Documents/Python/ratio_nt/figures/'; #
 
-second_shelvepath = '/Users/james/Documents/Python/et_mt/data/'; #'/Users/jameswilmott/Documents/Python/et_mt/data/'; #	
+second_shelvepath = '/Users/jameswilmott/Documents/Python/et_mt/data/'; #	'/Users/james/Documents/Python/et_mt/data/'; #
 
 #import the persistent database to save data analysis for future use (plotting)
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
@@ -751,6 +751,53 @@ ax1.legend([]);
 filename = 'ratio_nt_COMMONRATIOS_shapesmatchonetargets_rt';
 savefig(savepath+filename+'.eps',dpi=400);
 show();
+
+
+#single target and target shapes match only
+
+fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
+ax1.set_ylim(650,800); ax1.set_yticks(arange(700,801,50));
+ax1.set_xlim([0.6, 0.1]);  ax1.set_xticks([1.0/2,1.0/3,1.0/5]);
+labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]='1/2'; labels[1]='1/3'; labels[2]='1/5';
+ax1.set_xticklabels(labels,size = 12);
+ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Ratio of Targets:Distractors', size=18);
+#first off get both number of targets search functions together
+st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(1+d))] for d in [2,3,5]];
+st_x = array([1.0/2,1.0/3,1.0/5]);
+match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'match',d,(2+d))] for d in [4,6,10]];
+match_x = array([1.0/2,1.0/3,1.0/5]);
+#plot them
+colors=['dimgrey','limegreen'];
+for x,y,c in zip([ match_x, st_x],[match_rts, st_rts], colors):
+    ax1.plot(x, y,marker='o', markersize=18, color = c, lw = 5.0);
+if id=='agg':
+    match_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'match',d,(2+d))] for d in [4,6,10]];
+    st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,d,(1+d))] for d in [2,3,5]];
+    for x,y,yerrors,c in zip([ match_x, st_x],[match_rts, st_rts],[match_bsems, st_bsems],colors):
+        for i,yerr in enumerate(yerrors):
+            ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, capsize=10, fmt='none');  
+#assign some configurations to the plots
+title('Reaction Time by Ratio', fontsize = 22);
+ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
+ax1.spines['bottom'].set_linewidth(2.0); ax1.spines['left'].set_linewidth(2.0);
+ax1.yaxis.set_ticks_position('left'); ax1.xaxis.set_ticks_position('bottom');
+oneline=mlines.Line2D([],[],color='lightsteelblue',lw=6,label='No Match'); twoline=mlines.Line2D([],[],color='dimgrey',lw=6,label='Yes Match');
+threeline=mlines.Line2D([],[],color='limegreen',lw=6,label='One Target');
+ax1.legend(handles=[oneline,twoline, threeline],loc = 'best',ncol=2,fontsize = 14);
+#save the labeled figure as a .png	
+filename = 'ratio_nt_COMMONRATIOS_standtargetshapesmatch_rt_labeled';
+savefig(savepath+filename+'.png',dpi=400);
+#then get rid of labels and save as a .eps
+title(''); ax1.set_ylabel(''); ax1.set_xlabel('');
+#labels[7]=''; labels[8]=''; labels[9]=''; labels[10]=''; labels[11]=''; labels[12]=''; 
+labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]=''; labels[1]=''; labels[2]=''; #labels[3]=''; labels[4]=''; labels[5]=''; labels[6]='';
+ax1.set_xticklabels(labels);
+ax1.set_yticklabels(['','','','','','','','','','','','','','']);
+ax1.legend([]);
+filename = 'ratio_nt_COMMONRATIOS_standtargetshapesmatch_rt';
+savefig(savepath+filename+'.eps',dpi=400);
+show();
+
 
 
 # 
