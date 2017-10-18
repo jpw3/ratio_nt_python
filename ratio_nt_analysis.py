@@ -9,8 +9,8 @@ from scipy.io import loadmat #used to load .mat files in as dictionaries
 from scipy import stats
 from glob import glob #for use in searching for/ finding data files
 import random #general purpose
-from collections import namedtuple
-import pyvttbl as pt
+import pandas
+
 pc = lambda x:sum(x)/float(len(x)); #create a percent correct lambda function
 
 datapath = '/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #
