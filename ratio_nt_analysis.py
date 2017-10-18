@@ -14,7 +14,8 @@ import pandas
 pc = lambda x:sum(x)/float(len(x)); #create a percent correct lambda function
 
 datapath = '/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #
-shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; #  '/Users/james/Documents/Python/ratio_nt/data/'; # 
+shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; #  '/Users/james/Documents/Python/ratio_nt/data/'; #
+savepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/';
 
 #import the persistent database to save data analysis for future use (plotting)
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
@@ -25,11 +26,6 @@ ids=['1','2','3','4','5','6','7','8','9','10','11']; #'jpw'
 # 1 targets: nr dists was 2,3,5,10,14
 # 2 targets: 3, 4, 6, 10, 13
 
-#define these for use in target shapes match vs. single target
-global tsm_st_df;
-tsm_st_df = pt.DataFrame();
-global tsm_st_score;
-tsm_st_score = namedtuple('score',['id','rt','condition','t_d_ratio']);
 
 # Data Analysis Methods #########################################################################################################
 
@@ -176,17 +172,11 @@ def computeSimpleEffectTargetsMatch(trial_matrix, id='agg'):
 def computeNrStim(trial_matrix, id='agg'):
 	if id=='agg':
 		db=subject_data;
-		#add in anova stuff later
-		df = pt.DataFrame();
-		pc_df = pt.DataFrame();
-		score = namedtuple('score',['id','rt','nr_targets','t_d_ratio']);
-		pc_score = namedtuple('score',['id','pc','nr_targets','t_d_ratio']);
-		st_df = pt.DataFrame();
-		mt_df = pt.DataFrame();
-		simp_score = namedtuple('score',['id','rt','t_d_ratio']);
+		data = pd.DataFrame(columns = ['sub_id','nr_targets','nr_dists','nr_stim','t_d_ratio','nr_stim','mean_rt','pc']);
 	else:
 		db=individ_subject_data;
     #here cycle through the total number of stimuli and number of distractors, finding the RT and accuracy for each combo
+	index_counter = 0;
 	for nr_t, nr_dists in zip([1,2],[[2,3,5,10,14],[3,4,6,10,13]]):
 		print 'Number of targets: %d'%nr_t; print ;
 		for d in nr_dists:
@@ -218,43 +208,13 @@ def computeNrStim(trial_matrix, id='agg'):
 				db['%s_%s_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,nr_t,d,(nr_t+d))] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_%s_targs_%s_dists_%s_nr_stim_il_SEMs'%(id,nr_t,d,(nr_t+d))] = compute_BS_SEM(all_il_matrix, 'time');
 				db['%s_%s_targs_%s_dists_%s_nr_stim_mt_SEMs'%(id,nr_t,d,(nr_t+d))] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_%s_targs_%s_dists_%s_nr_stim_pc_SEMs'%(id,nr_t,d,(nr_t+d))] = compute_BS_SEM(all_res_matrix, 'result');
 				#append all the datae for each subject together in the dataframe for use in ANOVA
-				#only do ANOVAs for the common ratio condition: 1/2, 1/3, 1/5
-				if ((float(nr_t)/d)==(1.0/2))|((float(nr_t)/d)==(1.0/3))|((float(nr_t)/d)==(1.0/5)):
-					for i,rt_scores,res_scores in zip(linspace(1,len(all_rt_matrix),len(all_rt_matrix)),all_rt_matrix,all_res_matrix):
-						#get the percent correct and correct it if necessary
-						p = pc(res_scores);
-						if p==1.0:
-							p = p-0.000000000001;
-						df.insert(score(i,mean(rt_scores),nr_t,float(nr_t)/d)._asdict());
-						pc_df.insert(pc_score(i,p,nr_t,float(nr_t)/d)._asdict());
-						#insert into the DF for use with target shapes match data
-						#also look for the simple effects of ratio on each level of targets number
-						if nr_t==1:
-							tsm_st_df.insert(tsm_st_score(i,mean(rt_scores),'single_target',float(nr_t)/d)._asdict());
-							st_df.insert(simp_score(i,mean(rt_scores),float(nr_t)/d)._asdict());
-						elif nr_t==2:
-							mt_df.insert(simp_score(i,mean(rt_scores),float(nr_t)/d)._asdict());		
+				for i,rt_scores,res_scores in zip(linspace(1,len(all_rt_matrix),len(all_rt_matrix)),all_rt_matrix,all_res_matrix):
+					data.loc[index_counter] = [i,nr_t,d,(nr_t+d),(nr_t/float(d)),mean(rt_scores),pc(res_scores)];
+					index_counter+=1;			
 			db.sync();
-	#now print the ANOVA results
-	if id=='agg':
-		print; print('##################### NUMBER OF TARGETS BY RATIO OF TARGETS:DISTRACTORS ANOVA RESULTS  #####################'); print ;
-		print; print ' # Reaction Time Statistics #'; print ;
-		print; print 'Omnibus: '; print;
-		print(df.anova('rt',sub='id',wfactors=['nr_targets','t_d_ratio']));
-		raw_input("Press ENTER to continue...");	
-		print; print ' # Accuracy Statistics #'; print ;
-		print; print 'Omnibus: '; print;
-		print(pc_df.anova('pc',sub='id',wfactors=['nr_targets','t_d_ratio']));
-		raw_input("Press ENTER to continue...");
-		
-		print; print('##################### SIMPLE EFFECTS OF RATIO FOR EACH LEVEL OF NR TARGETS ANOVA RESULTS  #####################'); print ;
-		print; print ' # Reaction Time Statistics #'; print ;
-		print; print 'SINGLE TARGET: '; print;
-		print(st_df.anova('rt',sub='id',wfactors=['t_d_ratio']));
-		raw_input("Press ENTER to continue...");
-		print; print 'TWO TARGETS: '; print;
-		print(mt_df.anova('rt',sub='id',wfactors=['t_d_ratio']));	
-		
+
+	#write the csv file
+	data.to_csv(savepath+'nr_targets_nr_dists_nr_stim_ratio.csv',index=False);		
 			
 	print 'Completed computation of number of stimuli data...';
 
@@ -264,10 +224,11 @@ def computeHFRelation(trial_matrix, id='agg'):
 	#for two target trials for each level of the number of stimuli.
 	if id=='agg':
 		db=subject_data;
-		#add in anova stuff later
+		data = pd.DataFrame(columns = ['sub_id','hf_match','nr_dists','mean_rt','pc']);
 	else:
 		db=individ_subject_data;
 	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
+	index_counter = 0;
 	for hf,bool in zip(['s','d'],[1,0]):
 		print 'Starting looking at %s hemifield relation'%hf; print ;
 		#then go through the number of distractors
@@ -299,9 +260,15 @@ def computeHFRelation(trial_matrix, id='agg'):
 				#calculate the SEMs
 				db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_rt_SEMs'%(id,hf,d,(2+d))] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_il_SEMs'%(id,hf,d,(2+d))] = compute_BS_SEM(all_il_matrix, 'time');
 				db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_mt_SEMs'%(id,hf,d,(2+d))] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_2_targs_%s_hf_%s_dists_%s_nr_stim_pc_SEMs'%(id,hf,d,(2+d))] = compute_BS_SEM(all_res_matrix, 'result');
-				# do ANOVA stuff
-				
-			db.sync();			
+				# do ANOVA stuff				
+				for i,rt_scores,res_scores in zip(linspace(1,len(all_rt_matrix),len(all_rt_matrix)),all_rt_matrix,all_res_matrix):
+					data.loc[index_counter] = [i,hf,d,mean(rt_scores),pc(res_scores)];
+					index_counter+=1;					
+			db.sync();
+			
+	#write the csv file
+	data.to_csv(savepath+'hf_match_nr_dists.csv',index=False);					
+			
 	print 'Completed computation of hemifield relation data...';			
 
 def computeTargetShapesMatch(trial_matrix, id='agg'):
@@ -309,16 +276,11 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 	#for two target trials for each level of the number of stimuli.
 	if id=='agg':
 		db=subject_data;
-		df = pt.DataFrame();
-		pc_df = pt.DataFrame();
-		score = namedtuple('score',['id','rt','target_shapes_match','t_d_ratio']);
-		pc_score = namedtuple('score',['id','pc','target_shapes_match','t_d_ratio']);
-		match_df = pt.DataFrame();
-		no_match_df = pt.DataFrame();
-		simp_score = namedtuple('score',['id','rt','t_d_ratio']);
+		data = pd.DataFrame(columns = ['sub_id','target_shapes_match','nr_dists','t_d_ratio','mean_rt','pc']);
 	else:
 		db=individ_subject_data;
 	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
+	index_counter = 0;
 	for tsm,bool in zip(['match','not_match'],[1,0]):
 		print 'Starting looking at %s level of target shapes matching'%tsm; print ;
 		#then go through the number of distractors
@@ -350,51 +312,13 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 			#calculate the SEMs
 				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_il_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_il_matrix, 'time');
 				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mt_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(all_res_matrix, 'result');
-			# do ANOVA stuff
 				for i,rt_scores,res_scores in zip(linspace(1,len(all_rt_matrix),len(all_rt_matrix)),all_rt_matrix,all_res_matrix):
-					#get the percent correct and correct it if necessary
-					p = pc(res_scores);
-					if p==1.0:
-						p = p-0.000000000001;
-					df.insert(score(i,mean(rt_scores),tsm,float(2)/d)._asdict());
-					pc_df.insert(pc_score(i,p,tsm,float(2)/d)._asdict());
-					#insert into the DF for use with target shapes match data
-					if ((float(2)/d)==(1.0/2))|((float(2)/d)==(1.0/3))|((float(2)/d)==(1.0/5)):
-						tsm_st_df.insert(tsm_st_score(i,mean(rt_scores),tsm,float(2)/d)._asdict());
-					#insert into the simple efects anovas
-					if tsm=='match':
-						match_df.insert(simp_score(i,mean(rt_scores),float(2)/d)._asdict());
-					elif tsm=='not_match':
-						no_match_df.insert(simp_score(i,mean(rt_scores),float(2)/d)._asdict());
-						
+					data.loc[index_counter] = [i,tsm,d,(2.0/d),mean(rt_scores),pc(res_scores)];
+					index_counter+=1;	
 			db.sync();
 
-	if id=='agg':	
-		print; print('##################### TARGET SHAPES MATCH BY RATIO OF TARGETS:DISTRACTORS ANOVA RESULTS  #####################'); print ;
-		print; print ' # Reaction Time Statistics #'; print ;
-		print; print 'Omnibus: '; print;
-		print(df.anova('rt',sub='id',wfactors=['target_shapes_match','t_d_ratio']));
-		raw_input("Press ENTER to continue...");	
-		print; print ' # Accuracy Statistics #'; print ;
-		print; print 'Omnibus: '; print;
-		print(pc_df.anova('pc',sub='id',wfactors=['target_shapes_match','t_d_ratio']));
-		raw_input("Press ENTER to continue...");				
-
-		#then do the target shapes match vs. single target cases
-		print; print('##################### TARGET SHAPES MATCH AND SINGLE TARGET CASES BY RATIO OF TARGETS:DISTRACTORS ANOVA RESULTS  #####################'); print ;
-		print; print ' # Reaction Time Statistics #'; print ;
-		print; print 'Omnibus: '; print;
-		print(tsm_st_df.anova('rt',sub='id',wfactors=['condition','t_d_ratio']));
-		raw_input("Press ENTER to continue...");	
-
-		print; print('##################### SIMPLE EFFECTS OF RATIO FOR EACH LEVEL OF TARGETS SHAPE MATCH ANOVA RESULTS  #####################'); print ;
-		print; print ' # Reaction Time Statistics #'; print ;
-		print; print 'TARGET SHAPES MATCH: '; print;
-		print(match_df.anova('rt',sub='id',wfactors=['t_d_ratio']));
-		raw_input("Press ENTER to continue...");
-		print; print 'TARGET SHAPES DONT MATCH: '; print;
-		print(no_match_df.anova('rt',sub='id',wfactors=['t_d_ratio']));		
-		
+	#write the csv file
+	data.to_csv(savepath+'tsm_nr_dists_ratio.csv',index=False);	
 		
 	print 'Completed computation of target shapes matching data...';
 
@@ -404,7 +328,7 @@ def computeTargetShapesMatchXHF(trial_matrix, id='agg'):
 	#do so by looking at each level of the number of distractors
 	if id=='agg':
 		db=subject_data;
-		#add in anova stuff later
+		data = pd.DataFrame(columns = ['sub_id','hf_match','target_shapes_match','nr_dists','t_d_ratio','mean_rt','pc']);
 	else:
 		db=individ_subject_data;
 	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
@@ -439,9 +363,14 @@ def computeTargetShapesMatchXHF(trial_matrix, id='agg'):
 				#calculate the SEMs
 					db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_rt_SEMs'%(id,tsm,d,(2+d),hf)] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_il_SEMs'%(id,tsm,d,(2+d),hf)] = compute_BS_SEM(all_il_matrix, 'time');
 					db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_mt_SEMs'%(id,tsm,d,(2+d),hf)] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_%s_hf_pc_SEMs'%(id,tsm,d,(2+d),hf)] = compute_BS_SEM(all_res_matrix, 'result');
-				# do ANOVA stuff
-		
-				db.sync();			
+				for i,rt_scores,res_scores in zip(linspace(1,len(all_rt_matrix),len(all_rt_matrix)),all_rt_matrix,all_res_matrix):
+					data.loc[index_counter] = [i,hf,tsm,d,(2.0/d),mean(rt_scores),pc(res_scores)];
+					index_counter+=1;			
+				db.sync();
+				
+	#write the csv file
+	data.to_csv(savepath+'hf_matchtsm_nr_dists_ratio.csv',index=False);					
+				
 	print 'Completed computation of target shapes matching by hemifield relation data...';
 
 				
