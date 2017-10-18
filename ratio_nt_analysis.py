@@ -13,9 +13,9 @@ import pandas as pd
 
 pc = lambda x:sum(x)/float(len(x)); #create a percent correct lambda function
 
-datapath = '/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #
-shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; #  '/Users/james/Documents/Python/ratio_nt/data/'; #
-savepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/';
+datapath = '/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #
+shelvepath =  '/Users/james/Documents/Python/ratio_nt/data/'; #'/Users/jameswilmott/Documents/Python/ratio_nt/data/'; #  
+savepath =  '/Users/james/Documents/Python/ratio_nt/data/'; # '/Users/jameswilmott/Documents/Python/ratio_nt/data/';
 
 #import the persistent database to save data analysis for future use (plotting)
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
@@ -356,7 +356,7 @@ def computeTargetShapesMatchXHF(trial_matrix, id='agg'):
 				# #for now, dont' shave the RTs 
 				# rts = [r for y in all_rt_matrix for r in y]; ils = [i for l in all_il_matrix for i in l];
 				# mts = [ms for j in all_mt_matrix for ms in j];
-				# res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not	
+				res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not	
 				if len(rts)==0:
 					continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)
 				#now find the relevant stats and set up the data into the database
