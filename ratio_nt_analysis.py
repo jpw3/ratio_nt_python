@@ -9,7 +9,7 @@ from scipy.io import loadmat #used to load .mat files in as dictionaries
 from scipy import stats
 from glob import glob #for use in searching for/ finding data files
 import random #general purpose
-import pandas
+import pandas as pd
 
 pc = lambda x:sum(x)/float(len(x)); #create a percent correct lambda function
 
@@ -172,7 +172,7 @@ def computeSimpleEffectTargetsMatch(trial_matrix, id='agg'):
 def computeNrStim(trial_matrix, id='agg'):
 	if id=='agg':
 		db=subject_data;
-		data = pd.DataFrame(columns = ['sub_id','nr_targets','nr_dists','nr_stim','t_d_ratio','nr_stim','mean_rt','pc']);
+		data = pd.DataFrame(columns = ['sub_id','nr_targets','nr_dists','nr_stim','t_d_ratio','mean_rt','pc']);
 	else:
 		db=individ_subject_data;
     #here cycle through the total number of stimuli and number of distractors, finding the RT and accuracy for each combo
@@ -332,6 +332,7 @@ def computeTargetShapesMatchXHF(trial_matrix, id='agg'):
 	else:
 		db=individ_subject_data;
 	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
+	index_counter = 0;
 	for tsm,bool in zip(['match','not_match'],[1,0]):
 		#now break it down by HF for two targets (same or different)
 		for hf,hf_bool in zip(['same','diff'],[1,0]):
