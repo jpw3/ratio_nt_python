@@ -10,11 +10,11 @@ import shelve #for database writing and reading
 
 #screen dimensions for the office ocmputer = (19.2,10.44)
 
-datapath = '/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #
-shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # '/Users/james/Documents/Python/ratio_nt/data/'; #
-savepath = '/Users/jameswilmott/Documents/Python/ratio_nt/figures/'; # '/Users/james/Documents/Python/ratio_nt/figures/'; #
+datapath = '/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #
+shelvepath =  '/Users/james/Documents/Python/ratio_nt/data/'; #'/Users/jameswilmott/Documents/Python/ratio_nt/data/'; # 
+savepath = '/Users/james/Documents/Python/ratio_nt/figures/'; #'/Users/jameswilmott/Documents/Python/ratio_nt/figures/'; # 
 
-second_shelvepath = '/Users/jameswilmott/Documents/Python/et_mt/data/'; #	'/Users/james/Documents/Python/et_mt/data/'; #
+second_shelvepath = '/Users/james/Documents/Python/et_mt/data/'; #'/Users/jameswilmott/Documents/Python/et_mt/data/'; #	
 
 #import the persistent database to save data analysis for future use (plotting)
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
