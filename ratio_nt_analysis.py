@@ -278,7 +278,7 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 	#for two target trials for each level of the number of stimuli.
 	if id=='agg':
 		db=subject_data;
-		data = pd.DataFrame(columns = ['sub_id','target_shapes_match','nr_dists','t_d_ratio','mean_rt','pc']);
+		data = pd.DataFrame(columns = ['sub_id','target_shapes_match','nr_dists','t_d_ratio','nr_targets','mean_rt','pc']);
 	else:
 		db=individ_subject_data;
 	#cycle through the two target trials, looking for whetehr the targets were in the same hf or not
@@ -316,7 +316,7 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(rt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_il_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(il_matrix, 'time');
 				db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mt_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(mt_matrix, 'time'); db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_pc_SEMs'%(id,tsm,d,(2+d))] = compute_BS_SEM(res_matrix, 'result');
 				for i,rt_scores,res_scores in zip(linspace(1,len(rt_matrix),len(rt_matrix)),rt_matrix,res_matrix):
-					data.loc[index_counter] = [i,tsm,d,(2.0/d),mean(rt_scores),pc(res_scores)];
+					data.loc[index_counter] = [i,tsm,d,(2.0/d),2,mean(rt_scores),pc(res_scores)];
 					index_counter+=1;	
 			db.sync();
 
