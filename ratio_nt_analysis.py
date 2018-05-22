@@ -13,9 +13,9 @@ import pandas as pd
 
 pc = lambda x:sum(x)/float(len(x)); #create a percent correct lambda function
 
-datapath = '/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #
-shelvepath =  '/Users/james/Documents/Python/ratio_nt/data/'; #'/Users/jameswilmott/Documents/Python/ratio_nt/data/'; #  
-savepath =  '/Users/james/Documents/Python/ratio_nt/data/'; # '/Users/jameswilmott/Documents/Python/ratio_nt/data/';
+datapath = '/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #
+shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; #  '/Users/james/Documents/Python/ratio_nt/data/'; #
+savepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/';'/Users/james/Documents/Python/ratio_nt/data/'; # 
 
 #import the persistent database to save data analysis for future use (plotting)
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
@@ -169,6 +169,51 @@ def getStats(id='agg',ids = ids):
 # 	print 'Completed simple effects analysis of number of targets';
 
 
+
+def compute_ResponseRepetition(block_matrix, id):	
+	#analyzes NBack for the different trial types broken down by what the actual GIVEN response was (e.g., what response was given on the previous trial and what was given the curren trial)	
+	if id=='agg':
+		db=subject_data;
+	else:
+		db=individ_subject_data;
+	type = 'Discrim';
+	for trial_types, name in zip([-1, 1, 0],['one_target','cong_percept_cong_resp','incong_percept_incong_resp']):
+		for prev_trial_types, prev_name in zip([-1, 1, 0],['one_target','cong_percept_cong_resp','incong_percept_incong_resp']):	
+			for prev_cong, bool in zip(['congruent','incongruent'],[1,0]):
+				all_rt_matrix = [[] for su in block_matrix];
+				all_res_matrix = [[] for su in block_matrix];					
+				index_counter=0;		
+				for subj_nr,blocks in enumerate(block_matrix):
+					for b in blocks:
+						if (b.block_type!=type):
+							continue;
+						for i in arange(0,len(b.trials)):
+							#first trial can't have an nback
+							if (i==0)&(b.trials[i].same_hf==trial_types):						
+								foo='bar';
+							elif ((b.trials[i-1].same_hf==prev_trial_types))&(b.trials[i].same_hf==trial_types)&((b.trials[i-1].selected_type==b.trials[i].selected_type)==bool)&(b.trials[i].selected_type > 0):								
+								if b.trials[i].result==1:										
+									all_rt_matrix[subj_nr].append(b.trials[i].response_time);
+								all_res_matrix[subj_nr].append(b.trials[i].result);		
+				ind_rt_sds=[std(are) for are in all_rt_matrix];  #get individual rt sds and il sds to 'shave' the rts of extreme outliers
+				rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
+				res_matrix = all_res_matrix;
+				rts = [r for y in rt_matrix for r in y]; res = [s for y in res_matrix for s in y];
+				if len(rts)==0:
+					continue;
+					1/0
+				db['%s_%s_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,type,name,prev_name,prev_cong)]=mean(rts); db['%s_UD_%s_%s_%s_prev_trialtype_%s_actualresponse_median_rt'%(id,type,name,prev_name,prev_cong)]=median(rts);
+				db['%s_%s_%s_%s_prev_trialtype_%s_actualresponse_var_rt'%(id,type,name,prev_name,prev_cong)]=var(rts);
+				db['%s_%s_%s_%s_prev_trialtype_%s_actualresponse_pc'%(id,type,name,prev_name,prev_cong)]=pc(res);
+				db.sync();
+				if id=='agg':
+					db['%s_%s_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,type,name,prev_name,prev_cong)]=compute_BS_SEM(rt_matrix, 'time');
+					db['%s_%s_%s_%s_prev_trialtype_%s_actualresponse_pc_bs_sems'%(id,type,name,prev_name,prev_cong)]=compute_BS_SEM(res_matrix, 'result');
+
+	db.sync();
+
+
+
 def computeNrStim(trial_matrix, id='agg'):
 	if id=='agg':
 		db=subject_data;
@@ -179,6 +224,33 @@ def computeNrStim(trial_matrix, id='agg'):
 	index_counter = 0;
 	for nr_t, nr_dists in zip([1,2],[[2,3,5,10,14],[3,4,6,10,13]]):
 		print 'Number of targets: %d'%nr_t; print ;
+		
+		#get the overall RTs (collapsing across nr of distractors)
+		all_res_matrix = [[tee.result for tee in ts if (tee.nr_targets==nr_t)] for ts in trial_matrix];
+		all_rt_matrix = [[tee.response_time for tee in ts if ((tee.nr_targets==nr_t)&(tee.result==1))] for ts in trial_matrix];
+		all_il_matrix = [[tee.initiation_latency for tee in ts if ((tee.nr_targets==nr_t)&(tee.result==1))] for ts in trial_matrix];
+		all_mt_matrix = [[tee.movement_time for tee in ts if ((tee.nr_targets==nr_t)&(tee.result==1))] for ts in trial_matrix];
+		res = [rs for h in all_res_matrix for rs in h];		
+		#get individual rt sds and il sds to 'shave' the rts of extreme outliers
+		ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
+		rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
+		il_matrix=[[i for i in individ_ils if (i>=(mean(individ_ils)-(3*ind_il_sd)))&(i<=(mean(individ_ils)+(3*ind_il_sd)))] for individ_ils,ind_il_sd in zip(all_il_matrix,ind_il_sds)];
+		mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
+		res_matrix = all_res_matrix;
+		rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];
+		if len(rts)==0:
+			continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)
+		#now find the relevant stats and set up the data into the database
+		db['%s_%s_targs_mean_rt'%(id,nr_t)] = mean(rts); db['%s_%s_targs_median_rt'%(id,nr_t)] = median(rts); db['%s_%s_targs_var_rt'%(id,nr_t)] = var(rts);
+		db['%s_%s_targs_mean_il'%(id,nr_t)] = mean(ils); db['%s_%s_targs_median_il'%(id,nr_t)] = median(ils); db['%s_%s_targs_var_il'%(id,nr_t)] = var(ils);
+		db['%s_%s_targs_mean_mt'%(id,nr_t)] = mean(mts); db['%s_%s_targs_median_mt'%(id,nr_t)] = median(mts); db['%s_%s_targs_var_mt'%(id,nr_t)] = var(mts);
+		db['%s_%s_targs__pc'%(id,nr_t)] = pc(res);
+		if id=='agg':
+			#calculate the SEMs
+			db['%s_%s_targs_rt_SEMs'%(id,nr_t)] = compute_BS_SEM(rt_matrix, 'time'); db['%s_%s_targs_il_SEMs'%(id,nr_t)] = compute_BS_SEM(il_matrix, 'time');
+			db['%s_%s_targs_mt_SEMs'%(id,nr_t)] = compute_BS_SEM(mt_matrix, 'time'); db['%s_%s_targs_pc_SEMs'%(id,nr_t)] = compute_BS_SEM(res_matrix, 'result');
+
+		#now break it down by # distractors
 		for d in nr_dists:
 			print 'Number of dists: %d'%d; print ;
             #collect the appropriate results and RTs for this condition
@@ -285,6 +357,34 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 	index_counter = 0;
 	for tsm,bool in zip(['match','not_match'],[1,0]):
 		print 'Starting looking at %s level of target shapes matching'%tsm; print ;
+
+		#start with collpasing across all nr of distractors
+		#collect the appropriate results and RTs for this condition
+		all_res_matrix = [[tee.result for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2))] for ts in trial_matrix];
+		all_rt_matrix = [[tee.response_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
+		all_il_matrix = [[tee.initiation_latency for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
+		all_mt_matrix = [[tee.movement_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
+		res = [rs for h in all_res_matrix for rs in h];
+		#get individual rt sds and il sds to 'shave' the rts of extreme outliers
+		ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
+		rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
+		il_matrix=[[i for i in individ_ils if (i>=(mean(individ_ils)-(3*ind_il_sd)))&(i<=(mean(individ_ils)+(3*ind_il_sd)))] for individ_ils,ind_il_sd in zip(all_il_matrix,ind_il_sds)];
+		mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
+		res_matrix = all_res_matrix;
+		rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];		
+		if len(rts)==0:
+			continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)		
+		#now find the relevant stats and set up the data into the database
+		db['%s_2_targs_shapes_%s_mean_rt'%(id,tsm)] = mean(rts); db['%s_2_targs_shapes_%s_median_rt'%(id,tsm)] = median(rts); db['%s_2_targs_shapes_%s_var_rt'%(id,tsm)] = var(rts);
+		db['%s_2_targs_shapes_%s_mean_il'%(id,tsm,)] = mean(ils); db['%s_2_targs_shapes_%s_median_il'%(id,tsm)] = median(ils); db['%s_2_targs_shapes_%s_var_il'%(id,tsm)] = var(ils);
+		db['%s_2_targs_shapes_%s_mean_mt'%(id,tsm)] = mean(mts); db['%s_2_targs_shapes_%s_median_mt'%(id,tsm)] = median(mts); db['%s_2_targs_shapes_%s_var_mt'%(id,tsm)] = var(mts);
+		db['%s_2_targs_shapes_%s_pc'%(id,tsm)] = pc(res);
+		if id=='agg':
+		#calculate the SEMs
+			db['%s_2_targs_shapes_%s_rt_SEMs'%(id,tsm)] = compute_BS_SEM(rt_matrix, 'time'); db['%s_2_targs_shapes_%s_il_SEMs'%(id,tsm)] = compute_BS_SEM(il_matrix, 'time');
+			db['%s_2_targs_shapes_%s_mt_SEMs'%(id,tsm)] = compute_BS_SEM(mt_matrix, 'time'); db['%s_2_targs_shapes_%s_pc_SEMs'%(id,tsm)] = compute_BS_SEM(res_matrix, 'result');		
+
+
 		#then go through the number of distractors
 		for d in [3,4,6,10,13]:
 			print 'Starting %s distractors'%d; print ;
