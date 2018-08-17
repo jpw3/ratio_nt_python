@@ -15,7 +15,7 @@ pc = lambda x:sum(x)/float(len(x)); #create a percent correct lambda function
 
 datapath = '/Users/jameswilmott/Documents/MATLAB/data/ratio_nt_data/'; #'/Users/james/Documents/MATLAB/data/ratio_nt_data/'; #
 shelvepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; #  '/Users/james/Documents/Python/ratio_nt/data/'; #
-savepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/';'/Users/james/Documents/Python/ratio_nt/data/'; # 
+savepath =  '/Users/jameswilmott/Documents/Python/ratio_nt/data/'; #'/Users/james/Documents/Python/ratio_nt/data/'; # 
 
 #import the persistent database to save data analysis for future use (plotting)
 subject_data = shelve.open(shelvepath+'ratio_nt_data');
@@ -128,45 +128,54 @@ def getStats(id='agg',ids = ids):
 # 			    
 # 			db.sync();			
 # 	print 'Completed simple effects analysis of number of targets';			
-# 
-# def computeSimpleEffectTargetsMatch(trial_matrix, id='agg'):
-# 	if id=='agg':
-# 		db=subject_data;
-# 		#add in anova stuff later
-# 	else:
-# 		db=individ_subject_data;
-# 	#go through all trials and look for whether it was 1 or 2 targets
-# 	for tsm,bool in zip(['match','not_match'],[1,0]):
-# 		#collect the appropriate results and RTs for this condition
-# 		all_res_matrix = [[tee.result for tee in ts if ((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)] for ts in trial_matrix];
-# 		all_rt_matrix = [[tee.response_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
-# 		all_il_matrix = [[tee.initiation_latency for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
-# 		all_mt_matrix = [[tee.movement_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
-# 		res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not		
-# 		# #get individual rt sds and il sds to 'shave' the rts of extreme outliers
-# 		# ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
-# 		# rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
-# 		# il_matrix=[[i for i in individ_ils if (i>=(mean(individ_ils)-(3*ind_il_sd)))&(i<=(mean(individ_ils)+(3*ind_il_sd)))] for individ_ils,ind_il_sd in zip(all_il_matrix,ind_il_sds)];
-# 		# mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
-# 		# rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];	
-# 		#for now, dont' shave the RTs 
-# 		rts = [r for y in all_rt_matrix for r in y]; ils = [i for l in all_il_matrix for i in l];
-# 		mts = [ms for j in all_mt_matrix for ms in j];
-# 		if len(rts)==0:
-# 			continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)
-# 		#now find the relevant stats and set up the data into the database
-# 		db['%s_shapes_%s_mean_rt'%(id,tsm)] = mean(rts); db['%s_shapes_%s_median_rt'%(id,tsm)] = median(rts); db['%s_shapes_%s_var_rt'%(id,tsm)] = var(rts);
-# 		db['%s_shapes_%s_mean_il'%(id,tsm)] = mean(ils); db['%s_shapes_%s_median_il'%(id,tsm)] = median(ils); db['%s_shapes_%s_var_il'%(id,tsm)] = var(ils);
-# 		db['%s_shapes_%s_mean_mt'%(id,tsm)] = mean(mts); db['%s_shapes_%s_median_mt'%(id,tsm)] = median(mts); db['%s_shapes_%s_var_mt'%(id,tsm)] = var(mts);
-# 		db['%s_shapes_%s_pc'%(id,tsm)] = pc(res);
-# 		if id=='agg':
-# 			#calculate the SEMs
-# 			db['%s_shapes_%s_rt_SEMs'%(id,tsm)] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_shapes_%s_il_SEMs'%(id,tsm)] = compute_BS_SEM(all_il_matrix, 'time');
-# 			db['%s_shapes_%s_mt_SEMs'%(id,tsm)] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_shapes_%s_pc_SEMs'%(id,tsm)] = compute_BS_SEM(all_res_matrix, 'result');
-# 			# do ANOVA stuff
-# 			    
-# 			db.sync();			
-# 	print 'Completed simple effects analysis of number of targets';
+#
+
+
+def computeSimpleEffectTargetsMatch(trial_matrix, id='agg'):
+	if id=='agg':
+		db=subject_data;
+		data = pd.DataFrame(columns = ['sub_id','targets_match','mean_rt','pc']);
+	else:
+		db=individ_subject_data;
+	#go through all trials and look for whether it was 1 or 2 targets
+	index_counter = 0;
+	for tsm,bool in zip(['match','not_match'],[1,0]):
+		#collect the appropriate results and RTs for this condition
+		all_res_matrix = [[tee.result for tee in ts if ((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)] for ts in trial_matrix];
+		all_rt_matrix = [[tee.response_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
+		all_il_matrix = [[tee.initiation_latency for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
+		all_mt_matrix = [[tee.movement_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.result==1))] for ts in trial_matrix];
+		res = [rs for h in all_res_matrix for rs in h]; #get all the results together; this won't change whether Im trimming or not		
+		#get individual rt sds and il sds to 'shave' the rts of extreme outliers
+		ind_rt_sds=[std(are) for are in all_rt_matrix]; ind_il_sds=[std(eye) for eye in all_il_matrix]; ind_mt_sds=[std(em) for em in all_mt_matrix];
+		rt_matrix=[[r for r in individ_rts if (r>=(mean(individ_rts)-(3*ind_rt_sd)))&(r<=(mean(individ_rts)+(3*ind_rt_sd)))] for individ_rts,ind_rt_sd in zip(all_rt_matrix,ind_rt_sds)]; #trim matrixed rts of outliers greater than 3 s.d.s from the mean
+		il_matrix=[[i for i in individ_ils if (i>=(mean(individ_ils)-(3*ind_il_sd)))&(i<=(mean(individ_ils)+(3*ind_il_sd)))] for individ_ils,ind_il_sd in zip(all_il_matrix,ind_il_sds)];
+		mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
+		rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];	
+		#for now, dont' shave the RTs 
+		# rts = [r for y in all_rt_matrix for r in y]; ils = [i for l in all_il_matrix for i in l];
+		# mts = [ms for j in all_mt_matrix for ms in j];
+		if len(rts)==0:
+			continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)
+		#now find the relevant stats and set up the data into the database
+		db['%s_shapes_%s_mean_rt'%(id,tsm)] = mean(rts); db['%s_shapes_%s_median_rt'%(id,tsm)] = median(rts); db['%s_shapes_%s_var_rt'%(id,tsm)] = var(rts);
+		db['%s_shapes_%s_mean_il'%(id,tsm)] = mean(ils); db['%s_shapes_%s_median_il'%(id,tsm)] = median(ils); db['%s_shapes_%s_var_il'%(id,tsm)] = var(ils);
+		db['%s_shapes_%s_mean_mt'%(id,tsm)] = mean(mts); db['%s_shapes_%s_median_mt'%(id,tsm)] = median(mts); db['%s_shapes_%s_var_mt'%(id,tsm)] = var(mts);
+		db['%s_shapes_%s_pc'%(id,tsm)] = pc(res);
+		if id=='agg':
+			#calculate the SEMs
+			db['%s_shapes_%s_rt_SEMs'%(id,tsm)] = compute_BS_SEM(all_rt_matrix, 'time'); db['%s_shapes_%s_il_SEMs'%(id,tsm)] = compute_BS_SEM(all_il_matrix, 'time');
+			db['%s_shapes_%s_mt_SEMs'%(id,tsm)] = compute_BS_SEM(all_mt_matrix, 'time'); db['%s_shapes_%s_pc_SEMs'%(id,tsm)] = compute_BS_SEM(all_res_matrix, 'result');
+			# do ANOVA stuff
+			for i,rt_scores,res_scores in zip(linspace(1,len(rt_matrix),len(rt_matrix)),rt_matrix,all_res_matrix):
+				data.loc[index_counter] = [i,tsm,mean(rt_scores),pc(res_scores)];
+				index_counter+=1;			    
+			db.sync();
+			
+	#write the csv file
+	data.to_csv(savepath+'simple_effects_targets_match.csv',index=False);		
+			
+	print 'Completed simple effects analysis of number of targets';
 
 
 
@@ -177,8 +186,8 @@ def compute_ResponseRepetition(block_matrix, id):
 	else:
 		db=individ_subject_data;
 	type = 'Discrim';
-	for trial_types, name in zip([-1, 1, 0],['one_target','cong_percept_cong_resp','incong_percept_incong_resp']):
-		for prev_trial_types, prev_name in zip([-1, 1, 0],['one_target','cong_percept_cong_resp','incong_percept_incong_resp']):	
+	for trial_types, name, nrt in zip([0, 1, 0],['one_target','cong_percept_cong_resp','incong_percept_incong_resp'],[1,2,2]):
+		for prev_trial_types, prev_name, prev_nrt in zip([0, 1, 0],['one_target','cong_percept_cong_resp','incong_percept_incong_resp'],[1,2,2]):	
 			for prev_cong, bool in zip(['congruent','incongruent'],[1,0]):
 				all_rt_matrix = [[] for su in block_matrix];
 				all_res_matrix = [[] for su in block_matrix];					
@@ -190,8 +199,10 @@ def compute_ResponseRepetition(block_matrix, id):
 						for i in arange(0,len(b.trials)):
 							#first trial can't have an nback
 							if (i==0)&(b.trials[i].same_hf==trial_types):						
-								foo='bar';
-							elif ((b.trials[i-1].same_hf==prev_trial_types))&(b.trials[i].same_hf==trial_types)&((b.trials[i-1].selected_type==b.trials[i].selected_type)==bool)&(b.trials[i].selected_type > 0):								
+								foo='bar';	
+							elif ((b.trials[i-1].target_types[0]==b.trials[i-1].target_types[1])==prev_trial_types)&(b.trials[i-1].nr_targets==prev_nrt)& \
+							((b.trials[i].target_types[0]==b.trials[i].target_types[1])==trial_types)&(b.trials[i].nr_targets==nrt) \
+							&((b.trials[i-1].selected_type==b.trials[i].selected_type)==bool)&(b.trials[i].selected_type > 0):								
 								if b.trials[i].result==1:										
 									all_rt_matrix[subj_nr].append(b.trials[i].response_time);
 								all_res_matrix[subj_nr].append(b.trials[i].result);		
