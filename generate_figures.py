@@ -256,49 +256,49 @@ savefig(savepath+filename+'.eps',dpi=400);
 show();
 # 
 # 
-# #finally only plot single target with target shapes match and notmatch pulled out from each other 
-# fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-# ax1.set_ylim(600,800); ax1.set_yticks(arange(650,801,50));    #ax1.set_ylim(600,900); ax1.set_yticks(arange(650,901,50));
-# ax1.set_xlim([0.6, 0.1]);  ax1.set_xticks([1.0/2,1.0/3,1.0/5]);
-# labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]='1/2'; labels[1]='1/3'; labels[2]='1/5'; 
-# ax1.set_xticklabels(labels,size = 12);
-# ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Ratio of Targets:Distractors', size=18);
-# #first off get both number of targets search functions together
-# x = array([1.0/2,1.0/3,1.0/5]); #they all have the same x for the common ratio stuff
-# st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(1+d))] for d in [2,3,5]];
-# nomatch_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'not_match',d,(2+d))] for d in [4,6,10]];
-# match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'match',d,(2+d))] for d in [4,6,10]];
-# #get errorbars together for all of the data as well
-# st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,d,(1+d))] for d in [2,3,5]];
-# nomatch_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [4,6,10]];
-# match_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'match',d,(2+d))] for d in [4,6,10]];
-# #plot everything together
-# colors=['steelblue','indigo','orchid']; 
-# for y,yerrors,c,alph in zip([st_rts, match_rts, nomatch_rts], [st_bsems, match_bsems, nomatch_bsems], colors, [1,1,1]):
-#     ax1.plot(x, y, marker='o', markersize=18, color = c, lw = 5.0, alpha = alph);
-#     for i,yerr in enumerate(yerrors):
-#         ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, alpha = alph, capsize=10, fmt='none');  #plot errorbars if more than 1 subject 
-# #assign some configurations to the plots
-# title('Reaction Time by Number of Stimuli', fontsize = 22);
-# ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
-# ax1.spines['bottom'].set_linewidth(2.0); ax1.spines['left'].set_linewidth(2.0);
-# ax1.yaxis.set_ticks_position('left'); ax1.xaxis.set_ticks_position('bottom');
-# # figure NT legend for reference
-# oneline=mlines.Line2D([],[],color='steelblue',lw=6,label='One Target'); 
-# matchline=mlines.Line2D([],[],color='indigo',lw=6,label='Shapes Match'); mismatchline=mlines.Line2D([],[],color='orchid',lw=6,label='Shapes Mismatch');
-# ax1.legend(handles=[oneline, matchline, mismatchline],loc = 'best',ncol=2,fontsize = 14);
-# #save the labeled figure as a .png	
-# filename = 'ratio_nt_tsm_commonratios_rt_labeled';
-# savefig(savepath+filename+'.png',dpi=400);
-# #then get rid of labels and save as a .eps
-# title(''); ax1.set_ylabel(''); ax1.set_xlabel('');
-# labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]=''; labels[1]=''; labels[2]=''; 
-# ax1.set_xticklabels(labels);
-# ax1.set_yticklabels(['','','','']); #'','','','','','','','','',''
-# ax1.legend([]);
-# filename = 'ratio_nt_tsm_commonratios_rt';
-# savefig(savepath+filename+'.eps',dpi=400);
-# show();
+#finally only plot single target with target shapes match and notmatch pulled out from each other 
+fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
+ax1.set_ylim(600,800); ax1.set_yticks(arange(650,801,50));    #ax1.set_ylim(600,900); ax1.set_yticks(arange(650,901,50));
+ax1.set_xlim([0.6, 0.1]);  ax1.set_xticks([1.0/2,1.0/3,1.0/5]);
+labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]='1/2'; labels[1]='1/3'; labels[2]='1/5'; 
+ax1.set_xticklabels(labels,size = 12);
+ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Ratio of Targets:Distractors', size=18);
+#first off get both number of targets search functions together
+x = array([1.0/2,1.0/3,1.0/5]); #they all have the same x for the common ratio stuff
+st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(1+d))] for d in [2,3,5]];
+nomatch_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'not_match',d,(2+d))] for d in [4,6,10]];
+match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'match',d,(2+d))] for d in [4,6,10]];
+#get errorbars together for all of the data as well
+st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,d,(1+d))] for d in [2,3,5]];
+nomatch_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [4,6,10]];
+match_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'match',d,(2+d))] for d in [4,6,10]];
+#plot everything together
+colors=['steelblue','indigo','orchid']; 
+for y,yerrors,c,alph in zip([st_rts, match_rts, nomatch_rts], [st_bsems, match_bsems, nomatch_bsems], colors, [1,1,1]):
+    ax1.plot(x, y, marker='o', markersize=18, color = c, lw = 0.0, alpha = alph);
+    for i,yerr in enumerate(yerrors):
+        ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, alpha = alph, capsize=10, fmt='none');  #plot errorbars if more than 1 subject 
+#assign some configurations to the plots
+title('Reaction Time by Number of Stimuli', fontsize = 22);
+ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
+ax1.spines['bottom'].set_linewidth(2.0); ax1.spines['left'].set_linewidth(2.0);
+ax1.yaxis.set_ticks_position('left'); ax1.xaxis.set_ticks_position('bottom');
+# figure NT legend for reference
+oneline=mlines.Line2D([],[],color='steelblue',lw=6,label='One Target'); 
+matchline=mlines.Line2D([],[],color='indigo',lw=6,label='Shapes Match'); mismatchline=mlines.Line2D([],[],color='orchid',lw=6,label='Shapes Mismatch');
+ax1.legend(handles=[oneline, matchline, mismatchline],loc = 'best',ncol=2,fontsize = 14);
+#save the labeled figure as a .png	
+filename = 'ratio_nt_tsm_commonratios_rt_labeled';
+savefig(savepath+filename+'.png',dpi=400);
+#then get rid of labels and save as a .eps
+title(''); ax1.set_ylabel(''); ax1.set_xlabel('');
+labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]=''; labels[1]=''; labels[2]=''; 
+ax1.set_xticklabels(labels);
+ax1.set_yticklabels(['','','','']); #'','','','','','','','','',''
+ax1.legend([]);
+filename = 'ratio_nt_tsm_commonratios_rt';
+savefig(savepath+filename+'.eps',dpi=400);
+show();
 # 
 # ############## Accurcy ###########
 # #now do the same as above for accuracy
