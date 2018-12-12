@@ -397,14 +397,14 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 		if len(rts)==0:
 			continue; #skip computing and saving data if there was no data that matched the criteria (so the array is empty)		
 		#now find the relevant stats and set up the data into the database
-		db['%s_2_targs_shapes_%s_mean_rt'%(id,tsm)] = mean(rts); db['%s_2_targs_shapes_%s_median_rt'%(id,tsm)] = median(rts); db['%s_2_targs_shapes_%s_var_rt'%(id,tsm)] = var(rts);
-		db['%s_2_targs_shapes_%s_mean_il'%(id,tsm,)] = mean(ils); db['%s_2_targs_shapes_%s_median_il'%(id,tsm)] = median(ils); db['%s_2_targs_shapes_%s_var_il'%(id,tsm)] = var(ils);
-		db['%s_2_targs_shapes_%s_mean_mt'%(id,tsm)] = mean(mts); db['%s_2_targs_shapes_%s_median_mt'%(id,tsm)] = median(mts); db['%s_2_targs_shapes_%s_var_mt'%(id,tsm)] = var(mts);
-		db['%s_2_targs_shapes_%s_pc'%(id,tsm)] = pc(res);
-		if id=='agg':
-		#calculate the SEMs
-			db['%s_2_targs_shapes_%s_rt_SEMs'%(id,tsm)] = compute_BS_SEM(rt_matrix, 'time'); db['%s_2_targs_shapes_%s_il_SEMs'%(id,tsm)] = compute_BS_SEM(il_matrix, 'time');
-			db['%s_2_targs_shapes_%s_mt_SEMs'%(id,tsm)] = compute_BS_SEM(mt_matrix, 'time'); db['%s_2_targs_shapes_%s_pc_SEMs'%(id,tsm)] = compute_BS_SEM(res_matrix, 'result');		
+		# db['%s_2_targs_shapes_%s_mean_rt'%(id,tsm)] = mean(rts); db['%s_2_targs_shapes_%s_median_rt'%(id,tsm)] = median(rts); db['%s_2_targs_shapes_%s_var_rt'%(id,tsm)] = var(rts);
+		# db['%s_2_targs_shapes_%s_mean_il'%(id,tsm,)] = mean(ils); db['%s_2_targs_shapes_%s_median_il'%(id,tsm)] = median(ils); db['%s_2_targs_shapes_%s_var_il'%(id,tsm)] = var(ils);
+		# db['%s_2_targs_shapes_%s_mean_mt'%(id,tsm)] = mean(mts); db['%s_2_targs_shapes_%s_median_mt'%(id,tsm)] = median(mts); db['%s_2_targs_shapes_%s_var_mt'%(id,tsm)] = var(mts);
+		# db['%s_2_targs_shapes_%s_pc'%(id,tsm)] = pc(res);
+		# if id=='agg':
+		# #calculate the SEMs
+		# 	db['%s_2_targs_shapes_%s_rt_SEMs'%(id,tsm)] = compute_BS_SEM(rt_matrix, 'time'); db['%s_2_targs_shapes_%s_il_SEMs'%(id,tsm)] = compute_BS_SEM(il_matrix, 'time');
+		# 	db['%s_2_targs_shapes_%s_mt_SEMs'%(id,tsm)] = compute_BS_SEM(mt_matrix, 'time'); db['%s_2_targs_shapes_%s_pc_SEMs'%(id,tsm)] = compute_BS_SEM(res_matrix, 'result');		
 
 
 		#then go through the number of distractors
@@ -423,6 +423,15 @@ def computeTargetShapesMatch(trial_matrix, id='agg'):
 			mt_matrix=[[m for m in individ_mts if (m>=(mean(individ_mts)-(3*ind_mt_sd)))&(m<=(mean(individ_mts)+(3*ind_mt_sd)))] for individ_mts,ind_mt_sd in zip(all_mt_matrix,ind_mt_sds)];
 			res_matrix = all_res_matrix;
 			rts = [r for y in rt_matrix for r in y]; ils = [i for l in il_matrix for i in l]; mts = [ms for j in mt_matrix for ms in j];	
+			
+			if (tsm == 'not_match') & (d==13):
+				poss = array([len([tee.response_time for tee in ts if (((tee.target_types[0]==tee.target_types[1])==bool)&(tee.nr_targets==2)&(tee.nr_distractors==d))]) for ts in trial_matrix]);
+				excluded = poss - array([len(gub) for gub in rt_matrix]);
+				
+				1/0;			
+			
+			
+			
 			# #for now, dont' shave the RTs 
 			# rts = [r for y in all_rt_matrix for r in y]; ils = [i for l in all_il_matrix for i in l];
 			# mts = [ms for j in all_mt_matrix for ms in j];
