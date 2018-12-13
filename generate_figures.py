@@ -42,53 +42,53 @@ matplotlib.pyplot.rc('font',weight='bold');
 
 ### Plot the previous trial response repetition analyses here
 
-fig , ax1 = subplots(1,1,figsize = (12.8,7.64)); fig.suptitle('Experiment 2 (RATIO EXPERIMENT) previous trial type analysis, response repetition, subject %s'%id, size = 22);
-colors = ['dodgerblue',(75/255.0,0/255.0,130/255.0),(186/255.0,85/255.0,212/255.0)];
-ax1.set_ylim(550,900); ax1.set_yticks(arange(600,901,50)); ax1.set_xlim([0.5,3.5]); ax1.set_xticks([1.0, 2.0, 3.0]);
-ax1.set_ylabel('Response time',size=18); #ax1.set_xlabel('Current Trial Type ',size=18);
-ax1.set_xticklabels(['One target','Same shapes','Different shapes']);
-#single target first
-ax1.plot(1.3, db['%s_%s_targs_mean_rt'%(id,1)], 'black', markersize = 12.0, marker = 'o', alpha = 1.0);
-ax1.errorbar(1.3,db['%s_%s_targs_mean_rt'%(id,1)],yerr=[[db['%s_%s_targs_rt_SEMs'%(id,1)]],[db['%s_%s_targs_rt_SEMs'%(id,1)]]],color='black',capsize = 12,lw=6.0);
-for type, c, ex in zip(['one_target','cong_percept_cong_resp','incong_percept_incong_resp'], colors, [0.7, 0.9, 1.1, 1.3]):
-    ax1.plot(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'one_target',type,'congruent')],color = c, markersize = 12.0, marker = 'o', alpha = 1.0);
-    ax1.plot(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'one_target',type,'incongruent')],color = c, markersize = 12.0, marker = 'o', alpha = 0.3);
-    if id=='agg':
-        ax1.errorbar(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'one_target',type,'congruent')], yerr = [[db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'one_target',type,'congruent')]],
-            [db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'one_target',type,'congruent')]]],color=c,lw=6.0,capsize = 12, alpha = 1.0);
-        ax1.errorbar(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'one_target',type,'incongruent')], yerr = [[db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'one_target',type,'congruent')]],
-            [db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'one_target',type,'incongruent')]]],color=c,lw=6.0,capsize = 12, alpha = 0.3);
-#next do the same shape trials
-ax1.plot(2.3,db['%s_2_targs_shapes_%s_mean_rt'%(id,'match')],color='black',markersize = 12.0, marker = 'o',); #,edgecolor='black'
-ax1.errorbar(2.3,db['%s_2_targs_shapes_%s_mean_rt'%(id,'match')],yerr = [[db['%s_2_targs_shapes_%s_rt_SEMs'%(id,'match')]],[db['%s_2_targs_shapes_%s_rt_SEMs'%(id,'match')]]],color='black',capsize = 12, lw=6.0);
-for type, c, ex in zip(['one_target','cong_percept_cong_resp','incong_percept_incong_resp'], colors, [1.7, 1.9, 2.1, 2.3]):  
-    ax1.plot(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'cong_percept_cong_resp',type,'congruent')],color = c, markersize = 12.0, marker = 'o', alpha = 1.0);
-    ax1.plot(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'cong_percept_cong_resp',type,'incongruent')],color = c, markersize = 12.0, marker = 'o', alpha = 0.3);
-    if id=='agg':
-        ax1.errorbar(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'cong_percept_cong_resp',type,'congruent')], yerr = [[db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'cong_percept_cong_resp',type,'congruent')]],
-            [db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'cong_percept_cong_resp',type,'congruent')]]],color=c,lw=6.0,capsize = 12, alpha = 1.0);
-        ax1.errorbar(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'cong_percept_cong_resp',type,'incongruent')], yerr = [[db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'cong_percept_cong_resp',type,'incongruent')]],
-            [db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'cong_percept_cong_resp',type,'incongruent')]]],color=c,lw=6.0,capsize = 12, alpha = 0.3);
-#different shape trials
-ax1.plot(3.3,db['%s_2_targs_shapes_%s_mean_rt'%(id,'not_match')],color='black',markersize = 12.0, marker = 'o',); #,edgecolor='black'
-ax1.errorbar(3.3,db['%s_2_targs_shapes_%s_mean_rt'%(id,'not_match')],yerr = [[db['%s_2_targs_shapes_%s_rt_SEMs'%(id,'not_match')]],[db['%s_2_targs_shapes_%s_rt_SEMs'%(id,'not_match')]]],color='black',capsize = 12, lw=6.0);
-for type, c, ex in zip(['one_target','cong_percept_cong_resp','incong_percept_incong_resp'], colors, [2.7, 2.9, 3.1, 3.3]):  
-    ax1.plot(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'incong_percept_incong_resp',type,'congruent')],color = c, markersize = 12.0, marker = 'o', alpha = 1.0);
-    ax1.plot(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'incong_percept_incong_resp',type,'incongruent')],color = c, markersize = 12.0, marker = 'o', alpha = 0.3);
-    if id=='agg':
-        ax1.errorbar(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'incong_percept_incong_resp',type,'congruent')], yerr = [[db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'incong_percept_incong_resp',type,'congruent')]],
-            [db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'incong_percept_incong_resp',type,'congruent')]]],color=c,lw=6.0,capsize = 12, alpha = 1.0);
-        ax1.errorbar(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'incong_percept_incong_resp',type,'incongruent')], yerr = [[db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'incong_percept_incong_resp',type,'incongruent')]],
-            [db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'incong_percept_incong_resp',type,'incongruent')]]],color=c,lw=6.0,capsize = 12, alpha = 0.3);
-ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
-ax1.spines['bottom'].set_linewidth(2.0); ax1.spines['left'].set_linewidth(2.0);
-ax1.yaxis.set_ticks_position('left'); ax1.xaxis.set_ticks_position('bottom');
-oneline=mlines.Line2D([],[],color='dodgerblue',lw=6,label='One target'); ssline=mlines.Line2D([],[],color=(75/255.0,0/255.0,130/255.0),lw=6,label='Same shapes');
-ddline=mlines.Line2D([],[],color=(186/255.0,85/255.0,212/255.0),lw=6,label='Different shapes'); allline=mlines.Line2D([],[],color='black',lw=6,label='Trial type average');
-ax1.legend(handles=[oneline,ssline,ddline,allline],loc = 2, ncol=2, fontsize = 18);
-show();
-
-1/0
+# fig , ax1 = subplots(1,1,figsize = (12.8,7.64)); fig.suptitle('Experiment 2 (RATIO EXPERIMENT) previous trial type analysis, response repetition, subject %s'%id, size = 22);
+# colors = ['dodgerblue',(75/255.0,0/255.0,130/255.0),(186/255.0,85/255.0,212/255.0)];
+# ax1.set_ylim(550,900); ax1.set_yticks(arange(600,901,50)); ax1.set_xlim([0.5,3.5]); ax1.set_xticks([1.0, 2.0, 3.0]);
+# ax1.set_ylabel('Response time',size=18); #ax1.set_xlabel('Current Trial Type ',size=18);
+# ax1.set_xticklabels(['One target','Same shapes','Different shapes']);
+# #single target first
+# ax1.plot(1.3, db['%s_%s_targs_mean_rt'%(id,1)], 'black', markersize = 12.0, marker = 'o', alpha = 1.0);
+# ax1.errorbar(1.3,db['%s_%s_targs_mean_rt'%(id,1)],yerr=[[db['%s_%s_targs_rt_SEMs'%(id,1)]],[db['%s_%s_targs_rt_SEMs'%(id,1)]]],color='black',capsize = 12,lw=6.0);
+# for type, c, ex in zip(['one_target','cong_percept_cong_resp','incong_percept_incong_resp'], colors, [0.7, 0.9, 1.1, 1.3]):
+#     ax1.plot(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'one_target',type,'congruent')],color = c, markersize = 12.0, marker = 'o', alpha = 1.0);
+#     ax1.plot(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'one_target',type,'incongruent')],color = c, markersize = 12.0, marker = 'o', alpha = 0.3);
+#     if id=='agg':
+#         ax1.errorbar(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'one_target',type,'congruent')], yerr = [[db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'one_target',type,'congruent')]],
+#             [db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'one_target',type,'congruent')]]],color=c,lw=6.0,capsize = 12, alpha = 1.0);
+#         ax1.errorbar(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'one_target',type,'incongruent')], yerr = [[db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'one_target',type,'congruent')]],
+#             [db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'one_target',type,'incongruent')]]],color=c,lw=6.0,capsize = 12, alpha = 0.3);
+# #next do the same shape trials
+# ax1.plot(2.3,db['%s_2_targs_shapes_%s_mean_rt'%(id,'match')],color='black',markersize = 12.0, marker = 'o',); #,edgecolor='black'
+# ax1.errorbar(2.3,db['%s_2_targs_shapes_%s_mean_rt'%(id,'match')],yerr = [[db['%s_2_targs_shapes_%s_rt_SEMs'%(id,'match')]],[db['%s_2_targs_shapes_%s_rt_SEMs'%(id,'match')]]],color='black',capsize = 12, lw=6.0);
+# for type, c, ex in zip(['one_target','cong_percept_cong_resp','incong_percept_incong_resp'], colors, [1.7, 1.9, 2.1, 2.3]):  
+#     ax1.plot(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'cong_percept_cong_resp',type,'congruent')],color = c, markersize = 12.0, marker = 'o', alpha = 1.0);
+#     ax1.plot(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'cong_percept_cong_resp',type,'incongruent')],color = c, markersize = 12.0, marker = 'o', alpha = 0.3);
+#     if id=='agg':
+#         ax1.errorbar(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'cong_percept_cong_resp',type,'congruent')], yerr = [[db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'cong_percept_cong_resp',type,'congruent')]],
+#             [db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'cong_percept_cong_resp',type,'congruent')]]],color=c,lw=6.0,capsize = 12, alpha = 1.0);
+#         ax1.errorbar(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'cong_percept_cong_resp',type,'incongruent')], yerr = [[db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'cong_percept_cong_resp',type,'incongruent')]],
+#             [db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'cong_percept_cong_resp',type,'incongruent')]]],color=c,lw=6.0,capsize = 12, alpha = 0.3);
+# #different shape trials
+# ax1.plot(3.3,db['%s_2_targs_shapes_%s_mean_rt'%(id,'not_match')],color='black',markersize = 12.0, marker = 'o',); #,edgecolor='black'
+# ax1.errorbar(3.3,db['%s_2_targs_shapes_%s_mean_rt'%(id,'not_match')],yerr = [[db['%s_2_targs_shapes_%s_rt_SEMs'%(id,'not_match')]],[db['%s_2_targs_shapes_%s_rt_SEMs'%(id,'not_match')]]],color='black',capsize = 12, lw=6.0);
+# for type, c, ex in zip(['one_target','cong_percept_cong_resp','incong_percept_incong_resp'], colors, [2.7, 2.9, 3.1, 3.3]):  
+#     ax1.plot(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'incong_percept_incong_resp',type,'congruent')],color = c, markersize = 12.0, marker = 'o', alpha = 1.0);
+#     ax1.plot(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'incong_percept_incong_resp',type,'incongruent')],color = c, markersize = 12.0, marker = 'o', alpha = 0.3);
+#     if id=='agg':
+#         ax1.errorbar(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'incong_percept_incong_resp',type,'congruent')], yerr = [[db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'incong_percept_incong_resp',type,'congruent')]],
+#             [db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'incong_percept_incong_resp',type,'congruent')]]],color=c,lw=6.0,capsize = 12, alpha = 1.0);
+#         ax1.errorbar(ex, db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_mean_rt'%(id,'incong_percept_incong_resp',type,'incongruent')], yerr = [[db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'incong_percept_incong_resp',type,'incongruent')]],
+#             [db['%s_Discrim_%s_%s_prev_trialtype_%s_actualresponse_rt_bs_sems'%(id,'incong_percept_incong_resp',type,'incongruent')]]],color=c,lw=6.0,capsize = 12, alpha = 0.3);
+# ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
+# ax1.spines['bottom'].set_linewidth(2.0); ax1.spines['left'].set_linewidth(2.0);
+# ax1.yaxis.set_ticks_position('left'); ax1.xaxis.set_ticks_position('bottom');
+# oneline=mlines.Line2D([],[],color='dodgerblue',lw=6,label='One target'); ssline=mlines.Line2D([],[],color=(75/255.0,0/255.0,130/255.0),lw=6,label='Same shapes');
+# ddline=mlines.Line2D([],[],color=(186/255.0,85/255.0,212/255.0),lw=6,label='Different shapes'); allline=mlines.Line2D([],[],color='black',lw=6,label='Trial type average');
+# ax1.legend(handles=[oneline,ssline,ddline,allline],loc = 2, ncol=2, fontsize = 18);
+# show();
+# 
+# 1/0
 
 # ##########################################################################################################################################################
 # # Number of Stimuli Analyses
@@ -98,26 +98,26 @@ show();
 
 #first plot all of the data points together
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(600,800); ax1.set_yticks(arange(650,801,50));    #ax1.set_ylim(600,900); ax1.set_yticks(arange(650,901,50));
-#ax1.set_xticks([3,4,5,6,7,11,14,15]);   #ax1.set_xticks([2.0/3,1.0/2,1.0/3,1.0/5,2.0/13,1.0/10,1.0/14]);ax1.set_xlim([0.75, 0]);
+ax1.set_ylim(600,850); ax1.set_yticks(arange(650,851,50));    #ax1.set_ylim(600,900); ax1.set_yticks(arange(650,901,50));
+ax1.set_xlim(4,16); ax1.set_xticks(2+array([3,4,6,10,13]));   #ax1.set_xticks([2.0/3,1.0/2,1.0/3,1.0/5,2.0/13,1.0/10,1.0/14]);
 #labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]='2/3'; labels[1]='1/2'; labels[2]='1/3'; labels[3]='1/5'; labels[4]='2/13'; labels[5]='1/10'; labels[6]='1/14';
 #ax1.set_xticklabels(labels,size = 12);
 ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Set Size', size=18);
 #first off get both number of targets search functions together
-st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(1+d))] for d in [2,3,5,10,14]];
-st_x = 1+array([2,3,5,10,14]);
+#st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(1+d))] for d in [2,3,5,10,14]];
+#st_x = 1+array([2,3,5,10,14]);
 mt_x = 2+array([3,4,6,10,13]);
 #get the target shapes match and nonmatch data together
 nomatch_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
 match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
 #get errorbars together for all of the data as well
-st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,d,(1+d))] for d in [2,3,5,10,14]];
+#st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,d,(1+d))] for d in [2,3,5,10,14]];
 nomatch_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [3,4,6,10,13]];
 match_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'match',d,(2+d))] for d in [3,4,6,10,13]];
 #plot everything together
-colors=['steelblue','indigo','orchid']; 
-for x,y,yerrors,c,alph in zip([st_x, mt_x, mt_x],[st_rts,  match_rts, nomatch_rts], [st_bsems,  match_bsems, nomatch_bsems], colors, [1,1,1]):
-    ax1.plot(x, y, marker='o', markersize=18, color = c, lw = 5.0, alpha = alph);
+colors=['indigo','orchid'];  #'steelblue',
+for x,y,yerrors,c,alph in zip([ mt_x, mt_x],[match_rts, nomatch_rts], [match_bsems, nomatch_bsems], colors, [1,1]): #st_x,    st_rts,  st_bsems,  ,1]
+    ax1.plot(x, y, marker='o', markersize=18, color = c, lw = 0, alpha = alph);
     for i,yerr in enumerate(yerrors):
         ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, alpha = alph, capsize=10, fmt='none');  #plot errorbars if more than 1 subject 
 #assign some configurations to the plots
@@ -135,12 +135,12 @@ filename = 'ratio_nt_allratios_rt_labeled';
 # #then get rid of labels and save as a .eps
 title(''); ax1.set_ylabel(''); ax1.set_xlabel('');
 #labels[7]=''; labels[8]=''; labels[9]=''; labels[10]=''; labels[11]=''; labels[12]=''; 
-labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]=''; labels[1]=''; labels[2]=''; labels[3]=''; labels[4]=''; labels[5]=''; labels[6]='';
+labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]=''; labels[1]=''; labels[2]=''; labels[3]=''; labels[4]=''; #labels[5]=''; labels[6]='';
 ax1.set_xticklabels(labels);
 ax1.set_yticklabels(['','','','']); #'','','','','','','','','',''
 ax1.legend([]);
-# filename = 'ratio_nt_allratios_rt';
-# savefig(savepath+filename+'.eps',dpi=400);
+filename = 'ratio_TSM_allratios_rt';
+savefig(savepath+filename+'.eps',dpi=400);
 # show();
 
 
@@ -211,7 +211,7 @@ ax1.legend([]);
 
 #then plot the data with only the common ratios together
 fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(600,800); ax1.set_yticks(arange(650,801,50));    #ax1.set_ylim(600,900); ax1.set_yticks(arange(650,901,50));
+ax1.set_ylim(600,850); ax1.set_yticks(arange(650,851,50));    #ax1.set_ylim(600,900); ax1.set_yticks(arange(650,901,50));
 ax1.set_xlim([0.6, 0.1]);  ax1.set_xticks([1.0/2,1.0/3,1.0/5]);
 labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]='1/2'; labels[1]='1/3'; labels[2]='1/5'; 
 ax1.set_xticklabels(labels,size = 12);
@@ -220,17 +220,17 @@ ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Ratio of Targets:Distrac
 x = array([1.0/2,1.0/3,1.0/5]); #they all have the same x for the common ratio stuff
 st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(1+d))] for d in [2,3,5]];
 mt_rts = [db['%s_2_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(2+d))] for d in [4,6,10]];
-nomatch_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'not_match',d,(2+d))] for d in [4,6,10]];
-match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'match',d,(2+d))] for d in [4,6,10]];
+#nomatch_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'not_match',d,(2+d))] for d in [4,6,10]];
+#match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'match',d,(2+d))] for d in [4,6,10]];
 #get errorbars together for all of the data as well
 st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,d,(1+d))] for d in [2,3,5]];
 mt_bsems = [db['%s_2_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,d,(2+d))] for d in [4,6,10]];
-nomatch_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [4,6,10]];
-match_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'match',d,(2+d))] for d in [4,6,10]];
+#nomatch_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [4,6,10]];
+#match_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'match',d,(2+d))] for d in [4,6,10]];
 #plot everything together
-colors=['steelblue','mediumpurple','indigo','orchid']; 
-for y,yerrors,c,alph in zip([st_rts, mt_rts, match_rts, nomatch_rts], [st_bsems, mt_bsems, match_bsems, nomatch_bsems], colors, [1,0.5,1,1]):
-    ax1.plot(x, y, marker='o', markersize=18, color = c, lw = 5.0, alpha = alph);
+colors=['steelblue','mediumpurple']; #,'indigo','orchid']; 
+for y,yerrors,c,alph in zip([st_rts, mt_rts], [st_bsems, mt_bsems], colors, [1,1]): #, match_bsems, nomatch_bsems    , match_rts, nomatch_rts ,1,1
+    ax1.plot(x, y, marker='o', markersize=18, color = c, lw = 0, alpha = alph);
     for i,yerr in enumerate(yerrors):
         ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, alpha = alph, capsize=10, fmt='none');  #plot errorbars if more than 1 subject 
 #assign some configurations to the plots
@@ -254,52 +254,57 @@ ax1.legend([]);
 filename = 'ratio_nt_commonratios_rt';
 savefig(savepath+filename+'.eps',dpi=400);
 show();
+
+
+1/0
+
+
 # 
 # 
-#finally only plot single target with target shapes match and notmatch pulled out from each other 
-fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
-ax1.set_ylim(600,800); ax1.set_yticks(arange(650,801,50));    #ax1.set_ylim(600,900); ax1.set_yticks(arange(650,901,50));
-ax1.set_xlim([0.6, 0.1]);  ax1.set_xticks([1.0/2,1.0/3,1.0/5]);
-labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]='1/2'; labels[1]='1/3'; labels[2]='1/5'; 
-ax1.set_xticklabels(labels,size = 12);
-ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Ratio of Targets:Distractors', size=18);
-#first off get both number of targets search functions together
-x = array([1.0/2,1.0/3,1.0/5]); #they all have the same x for the common ratio stuff
-st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(1+d))] for d in [2,3,5]];
-nomatch_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'not_match',d,(2+d))] for d in [4,6,10]];
-match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'match',d,(2+d))] for d in [4,6,10]];
-#get errorbars together for all of the data as well
-st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,d,(1+d))] for d in [2,3,5]];
-nomatch_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [4,6,10]];
-match_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'match',d,(2+d))] for d in [4,6,10]];
-#plot everything together
-colors=['steelblue','indigo','orchid']; 
-for y,yerrors,c,alph in zip([st_rts, match_rts, nomatch_rts], [st_bsems, match_bsems, nomatch_bsems], colors, [1,1,1]):
-    ax1.plot(x, y, marker='o', markersize=18, color = c, lw = 0.0, alpha = alph);
-    for i,yerr in enumerate(yerrors):
-        ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, alpha = alph, capsize=10, fmt='none');  #plot errorbars if more than 1 subject 
-#assign some configurations to the plots
-title('Reaction Time by Number of Stimuli', fontsize = 22);
-ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
-ax1.spines['bottom'].set_linewidth(2.0); ax1.spines['left'].set_linewidth(2.0);
-ax1.yaxis.set_ticks_position('left'); ax1.xaxis.set_ticks_position('bottom');
-# figure NT legend for reference
-oneline=mlines.Line2D([],[],color='steelblue',lw=6,label='One Target'); 
-matchline=mlines.Line2D([],[],color='indigo',lw=6,label='Shapes Match'); mismatchline=mlines.Line2D([],[],color='orchid',lw=6,label='Shapes Mismatch');
-ax1.legend(handles=[oneline, matchline, mismatchline],loc = 'best',ncol=2,fontsize = 14);
-#save the labeled figure as a .png	
-filename = 'ratio_nt_tsm_commonratios_rt_labeled';
-savefig(savepath+filename+'.png',dpi=400);
-#then get rid of labels and save as a .eps
-title(''); ax1.set_ylabel(''); ax1.set_xlabel('');
-labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]=''; labels[1]=''; labels[2]=''; 
-ax1.set_xticklabels(labels);
-ax1.set_yticklabels(['','','','']); #'','','','','','','','','',''
-ax1.legend([]);
-filename = 'ratio_nt_tsm_commonratios_rt';
-savefig(savepath+filename+'.eps',dpi=400);
-show();
-# 
+# #finally only plot single target with target shapes match and notmatch pulled out from each other 
+# fig = figure(figsize = (12.8,7.64)); ax1=gca(); #grid(True);
+# ax1.set_ylim(600,850); ax1.set_yticks(arange(650,851,50));    #ax1.set_ylim(600,900); ax1.set_yticks(arange(650,901,50));
+# ax1.set_xlim([0.6, 0.1]);  ax1.set_xticks([1.0/2,1.0/3,1.0/5]);
+# labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]='1/2'; labels[1]='1/3'; labels[2]='1/5'; 
+# ax1.set_xticklabels(labels,size = 12);
+# ax1.set_ylabel('Milliseconds',size=18); ax1.set_xlabel('Ratio of Targets:Distractors', size=18);
+# #first off get both number of targets search functions together
+# x = array([1.0/2,1.0/3,1.0/5]); #they all have the same x for the common ratio stuff
+# st_rts = [db['%s_1_targs_%s_dists_%s_nr_stim_mean_rt'%(id,d,(1+d))] for d in [2,3,5]];
+# nomatch_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'not_match',d,(2+d))] for d in [4,6,10]];
+# match_rts = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_mean_rt'%(id,'match',d,(2+d))] for d in [4,6,10]];
+# #get errorbars together for all of the data as well
+# st_bsems = [db['%s_1_targs_%s_dists_%s_nr_stim_rt_SEMs'%(id,d,(1+d))] for d in [2,3,5]];
+# nomatch_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'not_match',d,(2+d))] for d in [4,6,10]];
+# match_bsems = [db['%s_2_targs_shapes_%s_%s_dists_%s_nr_stim_rt_SEMs'%(id,'match',d,(2+d))] for d in [4,6,10]];
+# #plot everything together
+# colors=['steelblue','indigo','orchid']; 
+# for y,yerrors,c,alph in zip([st_rts, match_rts, nomatch_rts], [st_bsems, match_bsems, nomatch_bsems], colors, [1,1,1]):
+#     ax1.plot(x, y, marker='o', markersize=18, color = c, lw = 0.0, alpha = alph);
+#     for i,yerr in enumerate(yerrors):
+#         ax1.errorbar(x[i], y[i], yerr=[[yerr],[yerr]], ecolor=c, lw = 4.0, alpha = alph, capsize=10, fmt='none');  #plot errorbars if more than 1 subject 
+# #assign some configurations to the plots
+# title('Reaction Time by Number of Stimuli', fontsize = 22);
+# ax1.spines['right'].set_visible(False); ax1.spines['top'].set_visible(False);
+# ax1.spines['bottom'].set_linewidth(2.0); ax1.spines['left'].set_linewidth(2.0);
+# ax1.yaxis.set_ticks_position('left'); ax1.xaxis.set_ticks_position('bottom');
+# # figure NT legend for reference
+# oneline=mlines.Line2D([],[],color='steelblue',lw=6,label='One Target'); 
+# matchline=mlines.Line2D([],[],color='indigo',lw=6,label='Shapes Match'); mismatchline=mlines.Line2D([],[],color='orchid',lw=6,label='Shapes Mismatch');
+# ax1.legend(handles=[oneline, matchline, mismatchline],loc = 'best',ncol=2,fontsize = 14);
+# #save the labeled figure as a .png	
+# filename = 'ratio_nt_tsm_commonratios_rt_labeled';
+# savefig(savepath+filename+'.png',dpi=400);
+# #then get rid of labels and save as a .eps
+# title(''); ax1.set_ylabel(''); ax1.set_xlabel('');
+# labels = [item.get_text() for item in ax1.get_xticklabels()]; labels[0]=''; labels[1]=''; labels[2]=''; 
+# ax1.set_xticklabels(labels);
+# ax1.set_yticklabels(['','','','']); #'','','','','','','','','',''
+# ax1.legend([]);
+# filename = 'ratio_nt_tsm_commonratios_rt';
+# savefig(savepath+filename+'.eps',dpi=400);
+# show();
+# # 
 # ############## Accurcy ###########
 # #now do the same as above for accuracy
 # 
